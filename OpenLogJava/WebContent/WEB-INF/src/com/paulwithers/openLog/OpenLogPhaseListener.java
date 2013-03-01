@@ -28,6 +28,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 					FacesException fe = (FacesException) error;
 					ee = (EvaluationExceptionEx) fe.getCause();
 				}
+				OpenLogItem.setThisAgent(false);
 				OpenLogItem.logErrorEx(ee, "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
 						+ " property/value: " + ee.getErrorText(), null, null);
 			}

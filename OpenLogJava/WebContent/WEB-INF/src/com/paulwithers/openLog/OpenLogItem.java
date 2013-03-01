@@ -231,13 +231,28 @@ public class OpenLogItem implements Serializable {
 	 */
 	public static String getThisAgent() {
 		if (_thisAgent == null) {
-			_thisAgent = ExtLibUtil.getXspContext().getUrl().toSiteRelativeString(ExtLibUtil.getXspContext());
-			_thisAgent = _thisAgent.substring(0);
-			if (_thisAgent.indexOf("?") > -1) {
-				_thisAgent = _thisAgent.substring(1, _thisAgent.indexOf("?"));
-			}
+			setThisAgent(true);
 		}
 		return _thisAgent;
+	}
+
+	public static void setThisAgent(boolean currPage) {
+		String fromPage = "";
+		if (currPage) {
+			fromPage = ExtLibUtil.getXspContext().getUrl().toSiteRelativeString(ExtLibUtil.getXspContext());
+			fromPage = fromPage.substring(0);
+		} else {
+			String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
+			if (historyUrls.length > 1) {
+				fromPage = historyUrls[1] + Integer.toString(historyUrls.length);
+			} else {
+				fromPage = "Test";
+			}
+		}
+		_thisAgent = fromPage;
+		if (fromPage.indexOf("?") > -1) {
+			_thisAgent = _thisAgent.substring(1, _thisAgent.indexOf("?"));
+		}
 	}
 
 	/**
