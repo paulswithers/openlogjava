@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xp:view xmlns:xp="http://www.ibm.com/xsp/core" xmlns:xc="http://www.ibm.com/xsp/custom">
+	<xp:this.resources>
+		<xp:dojoModule name="extlib.dijit.Loading"></xp:dojoModule>
+	</xp:this.resources>
+
+	<xc:ccLayoutOneUI selected="click">
+		<xp:this.facets>
+			<xp:div xp:key="facet_1" style="text-align:center" id="panel1">
+				<!-- Images -->
+				<xp:image url="intec-logo-medium1.gif" id="image1"
+					style="float:left" alt="Intec Systems Ltd">
+				</xp:image>
+				<!-- Title -->
+				<xp:text escape="true" id="computedField1" value="Welcome"
+					tagName="h1" style="clear:left;">
+				</xp:text>
+				<xp:button value="This fails" id="button1">
+					<xp:eventHandler event="onclick" submit="true"
+						refreshMode="complete">
+						<xp:this.action><![CDATA[#{javascript:com.paulwithers.openLog.OpenLogItem.logEvent(null,com.paulwithers.util.OpenLogItem.getXspProperty("xsp.openlog.filepath",""),null,null);}]]></xp:this.action>
+					</xp:eventHandler>
+				</xp:button>
+			</xp:div>
+		</xp:this.facets>
+	</xc:ccLayoutOneUI>
+</xp:view>

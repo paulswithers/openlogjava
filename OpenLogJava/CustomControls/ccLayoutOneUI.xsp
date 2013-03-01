@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xp:view xmlns:xp="http://www.ibm.com/xsp/core" xmlns:xe="http://www.ibm.com/xsp/coreex">
+	<xe:applicationLayout id="applicationLayout1">
+		<xp:this.facets>
+			<xe:navigator id="navigator1" xp:key="LeftColumn">
+				<xe:this.treeNodes>
+					<xe:pageTreeNode label="Home" page="/Home.xsp">
+						<xe:this.selected><![CDATA[${compositeData.selected=="home"}]]></xe:this.selected>
+					</xe:pageTreeNode>
+					<xe:pageTreeNode label="Error On Load" page="/ErrorOnLoad.xsp">
+						<xe:this.selected><![CDATA[${compositeData.selected=="load"}]]></xe:this.selected>
+					</xe:pageTreeNode>
+					<xe:pageTreeNode label="Error On Click" page="/ErrorOnClick.xsp">
+						<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
+					</xe:pageTreeNode>
+				</xe:this.treeNodes>
+			</xe:navigator>
+		</xp:this.facets>
+		<xp:callback facetName="facet_1" id="callback1"></xp:callback>
+		<xe:this.configuration>
+			<xe:oneuiApplication placeBar="false" footer="false"
+				legal="false" titleBarName="CSV Importer">
+			</xe:oneuiApplication>
+		</xe:this.configuration>
+	</xe:applicationLayout>
+</xp:view>

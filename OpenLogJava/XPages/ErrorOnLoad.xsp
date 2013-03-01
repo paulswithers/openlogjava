@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xp:view xmlns:xp="http://www.ibm.com/xsp/core" xmlns:xc="http://www.ibm.com/xsp/custom">
+
+	<xc:ccLayoutOneUI selected="load">
+		<xp:this.facets>
+			<xp:div xp:key="facet_1" style="text-align:center" id="panel1">
+				<!-- Images -->
+				<xp:image url="intec-logo-medium1.gif" id="image1"
+					style="float:left" alt="Intec Systems Ltd">
+				</xp:image>
+				<xp:text id="Test1">
+					<xp:this.value><![CDATA[#{javascript:com.paulwithers.openLog.OpenLogItem.getXspProperty("xsp.openlog.filepath","");}]]>
+					</xp:this.value>
+				</xp:text>
+			</xp:div>
+		</xp:this.facets>
+	</xc:ccLayoutOneUI>
+</xp:view>
