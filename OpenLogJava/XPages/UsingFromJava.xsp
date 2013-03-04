@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xp:view xmlns:xp="http://www.ibm.com/xsp/core" xmlns:xc="http://www.ibm.com/xsp/custom">
+
+	<!--
+		Copyright 2013 Paul Withers
+		Licensed under the Apache License, Version 2.0 (the "License");
+		you may not use this file except in compliance with the License.
+		You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+		Unless required by applicable law or agreed to in writing,
+		software distributed under the License is distributed on an "AS IS" BASIS,
+		WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		See the License for the specific language governing permissions and limitations under the License
+	-->
+
+
+	<xc:ccLayoutOneUI selected="using">
+		<xp:this.facets>
+			<xp:div xp:key="facet_1" style="text-align:center" id="panel1">
+				<!-- Images -->
+				<xp:image url="intec-logo-medium1.gif" id="image1"
+					style="float:right" alt="Intec Systems Ltd">
+				</xp:image>
+				<xp:div styleClass="lotusInfoBox" style="clear:right;text-align:left;">
+					<xp:text escape="false">
+						<xp:this.value><![CDATA[Using OpenLog from Java is even easier than ever.<br/><br/>
+						The class is now static, so there is no need to create an object before calling any method.
+						Just import com.paulwithers.openLog.OpenLogItem (a new package name, for forwards compatibility)
+						Method names haven't changed. But I've fixed OpenLogItem.LogErrorEx().<br/><br/>
+						<ul>
+						<li><i><b>OpenLogItem.logError(Throwable)</b></i>: pass the Exception / Throwable from your try/catch block.</li>
+						<li><i><b>OpenLogItem.logError(Session, Throwable)</b></i>: as above, but you can pass a different session, if required.</li>
+						<li><i><b>OpenLogItem.logError(Session, Throwable, String, Level, Document)</b></i>: full control, but
+						only worth using if you want to pass a different session. It calls logErrorEx, so if you
+						are using the default session, it's advisable to just call OpenLogItem.logErrorEx().</li>
+						<li><i><b>OpenLogItem.logErrorEx(Throwable, String, Level, Document)</b></i>: first param is an Exception / Throwable
+						or null; second param is a String custom error message; third param is a java.util.logging.Level
+						object - Level.SEVERE, Level.WARNING, Level.INFO, Level.CONFIG, Level.FINE, Level.FINER, or
+						Level.FINEST; fourth param is a Document object or null.</li>
+						<li><i><b>OpenLogItem.logEvent(Throwable, String, Level, Document)</b></i>: params as above.</li>
+						<li><i><b>OpenLogItem.logEvent(Session, Throwable, String, Level, Document)</b></i>: params as above,
+						plus the ability to pass a different session.</li>
+						]]>
+						</xp:this.value>
+					</xp:text>
+				</xp:div>
+			</xp:div>
+		</xp:this.facets>
+	</xc:ccLayoutOneUI>
+</xp:view>

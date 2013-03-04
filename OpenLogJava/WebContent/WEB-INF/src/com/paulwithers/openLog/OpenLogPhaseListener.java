@@ -129,7 +129,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 							if (null != eventObj.getControl()) {
 								msg = msg + eventObj.getControl().getId();
 							}
-							msg = msg + eventObj.getMsg();
+							msg = msg + " " + eventObj.getMsg();
 							Level severity = convertSeverity(eventObj.getSeverity());
 							Document passedDoc = null;
 							if (!"".equals(eventObj.getUnid())) {

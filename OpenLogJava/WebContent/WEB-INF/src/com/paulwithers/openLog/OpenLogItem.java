@@ -611,6 +611,7 @@ public class OpenLogItem implements Serializable {
 		return retVal;
 	}
 
+	@SuppressWarnings("finally")
 	private static String getIniVar(String propertyName, String defaultValue) {
 		String retVal = defaultValue;
 		try {
