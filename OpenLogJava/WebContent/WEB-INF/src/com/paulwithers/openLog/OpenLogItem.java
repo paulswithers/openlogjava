@@ -19,6 +19,30 @@ package com.paulwithers.openLog;
  */
 
 /*
+ * Paul Withers, Intec March 2013
+ * Some significant enhancements here since the version Nathan cleaned up for XPages Help Application.
+ * Consequently, I've renamed the package completely, so there is no conflict
+ *
+ * 1. Everything is now static, so no need to create an OpenLog object
+ *
+ * 2. Everything now uses ExtLibUtil instead of Tim Tripcony's code (sorry, Tim! ;-) )
+ *
+ * 3. _logDbName and olDebugLevel are set using getXspProperty(String, String). That method gets a value from
+ * xsp.properties looking for the first parameter, looking first to current NSF, then the server.
+ * If nothing is found, getIniVar is then called, looking to the notes.ini using the same key.
+ * If nothing is still found, the second parameter from both methods is used, the default.
+ *
+ * 4. setThisAgent(boolean) method has been added. By default it gets the current page.
+ * Otherwise it gets the previous page. Why? Because if we've been redirected to an error page,
+ * we want to know which page the ACTUAL error occurred on.
+ *
+ * 5. logErrorEx has been fixed. It didn't work before.
+ *
+ * 6. _eventTime and _startTime recycled after creating logDoc. Nathan, I'll sleep a little less tonight,
+ * but it's best practice ;-)
+ */
+
+/*
  * Nathan T. Freeman, GBS Jun 20, 2011
  * Developers notes...
  *
@@ -97,41 +121,41 @@ public class OpenLogItem implements Serializable {
 	 * functions; added useServerLogWhenLocal and logToCurrentDatabase variables/options 20040217a: this version made
 	 * the agentContext object global and fixed a problem where the agentContext was being recycled in the constuctor
 	 * (this is very bad) 20040214b: initial version
-	 * 
+	 *
 	 * DISCLAIMER: This code is provided "as-is", and should be used at your own risk. The authors make no express or
 	 * implied warranty about anything, and they will not be responsible or liable for any damage caused by the use or
 	 * misuse of this code or its byproducts. No guarantees are made about anything.
-	 * 
+	 *
 	 * That being said, you can use, modify, and distribute this code in any way you want, as long as you keep this
 	 * header section intact and in a prominent place in the code. </HEADER>
 	 * =======================================================
-	 * 
+	 *
 	 * This class contains generic functions that can be used to log events and errors to the OpenLog database. All you
 	 * have to do it copy this script library to any database that should be sending errors to the OpenLog database, and
 	 * add it to your Java agents using the Edit Project button (see the "Using This Database" doc in the OpenLog
 	 * database for more details).
-	 * 
+	 *
 	 * At the beginning of your agent, create a global instance of this class like this:
-	 * 
+	 *
 	 * private OpenLogItem oli = new OpenLogItem();
-	 * 
+	 *
 	 * and then in all the try/catch blocks that you want to send errors from, add the line:
-	 * 
+	 *
 	 * oli.logError(e);
-	 * 
+	 *
 	 * where "e" is the Exception that you caught. That's all you have to do. The LogError method will automatically
 	 * create a document in the OpenLog database that contains all sorts of information about the error that occurred,
 	 * including the name of the agent and function/sub that it occurred in.
-	 * 
+	 *
 	 * For additional functionality, you can use the LogErrorEx function to add a custom message, a severity level,
 	 * and/or a link to a NotesDocument to the log doc.
-	 * 
+	 *
 	 * In addition, you can use the LogEvent function to add a notification document to the OpenLog database.
-	 * 
+	 *
 	 * You'll notice that I trap and discard almost all of the Exceptions that may occur as the methods in this class
 	 * are running. This is because the class is normally only used when an error is occurring anyway, so there's not
 	 * sense in trying to pass any new errors back up the stack.
-	 * 
+	 *
 	 * The master copy of this script library resides in the OpenLog database. All copies of this library in other
 	 * databases should be set to inherit changes from that database.
 	 */
@@ -148,7 +172,7 @@ public class OpenLogItem implements Serializable {
 	// MODIFY THESE FOR YOUR OWN ENVIRONMENT
 	// (don't forget to use double-backslashes if this database
 	// is in a Windows subdirectory -- like "logs\\OpenLog.nsf")
-	private static String _logDbName = getXspProperty("xsp.openlog.filepath", "OpenLog.nsf");
+	private static String _logDbName = "";
 
 	private static String _thisDatabase;
 	private static String _thisServer;
@@ -216,8 +240,7 @@ public class OpenLogItem implements Serializable {
 		if (_thisServer == null) {
 			try {
 				_thisServer = getSession().getServerName();
-				if (_thisServer == null)
-					_thisServer = "";
+				if (_thisServer == null) _thisServer = "";
 			} catch (Exception e) {
 				debugPrint(e);
 			}
@@ -244,9 +267,9 @@ public class OpenLogItem implements Serializable {
 		} else {
 			String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
 			if (historyUrls.length > 1) {
-				fromPage = historyUrls[1] + Integer.toString(historyUrls.length);
+				fromPage = historyUrls[1];
 			} else {
-				fromPage = "Test";
+				fromPage = historyUrls[0];
 			}
 		}
 		_thisAgent = fromPage;
@@ -261,7 +284,7 @@ public class OpenLogItem implements Serializable {
 	public static Database getLogDb() {
 		if (_logDb == null) {
 			try {
-				_logDb = getSession().getDatabase(getThisServer(), getLogDbName());
+				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
 			} catch (Exception e) {
 				debugPrint(e);
 			}
@@ -273,7 +296,7 @@ public class OpenLogItem implements Serializable {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
-					_logDb = getSession().getDatabase(getThisServer(), getLogDbName());
+					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
 				} catch (Exception e) {
 					debugPrint(e);
 				}
@@ -438,6 +461,9 @@ public class OpenLogItem implements Serializable {
 	 * @return the logDbName
 	 */
 	public static String getLogDbName() {
+		if ("".equals(_logDbName)) {
+			_logDbName = getXspProperty("xsp.openlog.filepath", "OpenLog.nsf");
+		}
 		return _logDbName;
 	}
 
@@ -507,8 +533,7 @@ public class OpenLogItem implements Serializable {
 	 * @return the message
 	 */
 	public static String getMessage() {
-		if (_message.length() > 0)
-			return _message;
+		if (_message.length() > 0) return _message;
 		return getBase().getMessage();
 	}
 
@@ -753,7 +778,7 @@ public class OpenLogItem implements Serializable {
 	/*
 	 * A helper method that gets some basic information for the global variables that's common to all errors and events
 	 * (event time and the name of the calling method).
-	 * 
+	 *
 	 * The stacklevel parameter probably looks a little mysterious. It's supposed to be the number of levels below the
 	 * calling method that we're at right now, so we know how far down the stack trace we need to look to get the name
 	 * of the calling method. For example, if another method called the logError method, and the logError method called
@@ -860,7 +885,7 @@ public class OpenLogItem implements Serializable {
 	 * Database parameter, which is normally a reference to the OpenLog database that you're using. However, it occurred
 	 * to me that you might want to use this class to write to an alternate log database at times, so I left you that
 	 * option (although you're stuck with the field names used by the OpenLog database in that case).
-	 * 
+	 *
 	 * This method creates a document in the log database, populates the fields of that document with the values in our
 	 * global variables, and adds some associated information about any Document that needs to be referenced. If you do
 	 * decide to send log information to an alternate database, you can just call this method manually after you've
@@ -870,7 +895,7 @@ public class OpenLogItem implements Serializable {
 		// exit early if there is no database
 		Database db = getLogDb();
 		if (db == null) {
-			getBase().printStackTrace();
+			System.out.println("Could not retrieve database at path " + getLogDbName());
 			return false;
 		}
 
@@ -887,29 +912,29 @@ public class OpenLogItem implements Serializable {
 			Throwable ee = getBase();
 			StackTraceElement ste = ee.getStackTrace()[0];
 			if (ee instanceof NotesException) {
-				logDoc.appendItemValue("LogErrorNumber", ((NotesException) ee).id);
-				logDoc.appendItemValue("LogErrorMessage", ((NotesException) ee).text);
+				logDoc.replaceItemValue("LogErrorNumber", ((NotesException) ee).id);
+				logDoc.replaceItemValue("LogErrorMessage", ((NotesException) ee).text);
 			} else {
-				logDoc.appendItemValue("LogErrorMessage", ee.getStackTrace()[0].toString());
+				logDoc.replaceItemValue("LogErrorMessage", ee.getStackTrace()[0].toString());
 			}
 
-			logDoc.appendItemValue("LogStackTrace", getStackTrace(ee));
-			logDoc.appendItemValue("LogErrorLine", ste.getLineNumber());
-			logDoc.appendItemValue("LogSeverity", getSeverity().getName());
-			logDoc.appendItemValue("LogEventTime", getEventTime());
-			logDoc.appendItemValue("LogEventType", getEventType());
-			logDoc.appendItemValue("LogMessage", getMessage());
-			logDoc.appendItemValue("LogFromDatabase", getThisDatabase());
-			logDoc.appendItemValue("LogFromServer", getThisServer());
-			logDoc.appendItemValue("LogFromAgent", getThisAgent());
-			logDoc.appendItemValue("LogFromMethod", ste.getClass() + "." + ste.getMethodName());
-			logDoc.appendItemValue("LogAgentLanguage", "Java");
-			logDoc.appendItemValue("LogUserName", getUserName());
-			logDoc.appendItemValue("LogEffectiveName", getEffName());
-			logDoc.appendItemValue("LogAccessLevel", getAccessLevel());
-			logDoc.appendItemValue("LogUserRoles", getUserRoles());
-			logDoc.appendItemValue("LogClientVersion", getClientVersion());
-			logDoc.appendItemValue("LogAgentStartTime", getStartTime());
+			logDoc.replaceItemValue("LogStackTrace", getStackTrace(ee));
+			logDoc.replaceItemValue("LogErrorLine", ste.getLineNumber());
+			logDoc.replaceItemValue("LogSeverity", getSeverity().getName());
+			logDoc.replaceItemValue("LogEventTime", getEventTime());
+			logDoc.replaceItemValue("LogEventType", getEventType());
+			logDoc.replaceItemValue("LogMessage", getMessage());
+			logDoc.replaceItemValue("LogFromDatabase", getThisDatabase());
+			logDoc.replaceItemValue("LogFromServer", getThisServer());
+			logDoc.replaceItemValue("LogFromAgent", getThisAgent());
+			logDoc.replaceItemValue("LogFromMethod", ste.getClass() + "." + ste.getMethodName());
+			logDoc.replaceItemValue("LogAgentLanguage", "Java");
+			logDoc.replaceItemValue("LogUserName", getUserName());
+			logDoc.replaceItemValue("LogEffectiveName", getEffName());
+			logDoc.replaceItemValue("LogAccessLevel", getAccessLevel());
+			logDoc.replaceItemValue("LogUserRoles", getUserRoles());
+			logDoc.replaceItemValue("LogClientVersion", getClientVersion());
+			logDoc.replaceItemValue("LogAgentStartTime", getStartTime());
 
 			if (getErrDoc() != null) {
 				docDb = getErrDoc().getParentDatabase();
@@ -939,19 +964,29 @@ public class OpenLogItem implements Serializable {
 		} finally {
 			// recycle all the logDoc objects when we're done with them
 			try {
-				if (rtitem != null)
-					rtitem.recycle();
+				if (rtitem != null) rtitem.recycle();
 			} catch (Exception e2) {
 				// NTF why the hell does .recycle() throw an Exception?
 			}
 			rtitem = null;
 			try {
-				if (logDoc != null)
-					logDoc.recycle();
+				if (logDoc != null) logDoc.recycle();
 			} catch (Exception e2) {
 				// see above
 			}
 			logDoc = null;
+			try {
+				if (_startTime != null) _startTime.recycle();
+			} catch (Exception e2) {
+				// see above
+			}
+			_startTime = null;
+			try {
+				if (_eventTime != null) _eventTime.recycle();
+			} catch (Exception e2) {
+				// see above
+			}
+			_eventTime = null;
 		}
 
 		return retval;
@@ -962,8 +997,7 @@ public class OpenLogItem implements Serializable {
 	 * olDebugLevel variable.
 	 */
 	private static void debugPrint(Exception ee) {
-		if ((ee == null) || (debugOut == null))
-			return;
+		if ((ee == null) || (debugOut == null)) return;
 
 		try {
 			// debug level of 1 prints the basic error message#

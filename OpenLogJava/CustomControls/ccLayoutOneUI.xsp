@@ -1,25 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xp:view xmlns:xp="http://www.ibm.com/xsp/core" xmlns:xe="http://www.ibm.com/xsp/coreex">
+
+	<!--
+		Copyright 2013 Paul Withers Licensed under the Apache License, Version 2.0
+		(the "License"); you may not use this file except in compliance with the
+		License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+		or agreed to in writing, software distributed under the License is distributed
+		on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+		express or implied. See the License for the specific language governing
+		permissions and limitations under the License
+	-->
+
 	<xe:applicationLayout id="applicationLayout1">
 		<xp:this.facets>
 			<xe:navigator id="navigator1" xp:key="LeftColumn">
 				<xe:this.treeNodes>
-					<xe:pageTreeNode label="Home" page="/Home.xsp">
-						<xe:this.selected><![CDATA[${compositeData.selected=="home"}]]></xe:this.selected>
-					</xe:pageTreeNode>
-					<xe:pageTreeNode label="Error On Load" page="/ErrorOnLoad.xsp">
-						<xe:this.selected><![CDATA[${compositeData.selected=="load"}]]></xe:this.selected>
-					</xe:pageTreeNode>
-					<xe:pageTreeNode label="Error On Click" page="/ErrorOnClick.xsp">
-						<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
-					</xe:pageTreeNode>
+					<xe:basicContainerNode label="Documentation">
+						<xe:this.children>
+							<xe:pageTreeNode label="Home" page="/Home.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="home"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Using from SSJS" page="/UsingFromSSJS.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="using"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Using from Java" page="/UsingFromJava.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="usingJava"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+						</xe:this.children>
+					</xe:basicContainerNode>
+
+					<xe:basicContainerNode label="Examples">
+						<xe:this.children>
+							<xe:pageTreeNode label="Error On Load" page="/ErrorOnLoad.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="load"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Error On Click" page="/ErrorOnClick.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Two Errors" page="/TwoErrors.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="two"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Caught Error" page="/ThrownError.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="thrown"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+						</xe:this.children>
+					</xe:basicContainerNode>
 				</xe:this.treeNodes>
 			</xe:navigator>
 		</xp:this.facets>
 		<xp:callback facetName="facet_1" id="callback1"></xp:callback>
 		<xe:this.configuration>
 			<xe:oneuiApplication placeBar="false" footer="false"
-				legal="false" titleBarName="CSV Importer">
+				legal="false" titleBarName="OpenLog Java / SSJS">
 			</xe:oneuiApplication>
 		</xe:this.configuration>
 	</xe:applicationLayout>

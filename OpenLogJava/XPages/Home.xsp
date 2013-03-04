@@ -1,21 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xp:view xmlns:xp="http://www.ibm.com/xsp/core" xmlns:xc="http://www.ibm.com/xsp/custom">
 
+	<!--
+		Copyright 2013 Paul Withers
+		Licensed under the Apache License, Version 2.0 (the "License");
+		you may not use this file except in compliance with the License.
+		You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+		Unless required by applicable law or agreed to in writing,
+		software distributed under the License is distributed on an "AS IS" BASIS,
+		WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		See the License for the specific language governing permissions and limitations under the License
+	-->
+
+
 	<xc:ccLayoutOneUI selected="home">
 		<xp:this.facets>
 			<xp:div xp:key="facet_1" style="text-align:center" id="panel1">
 				<!-- Images -->
 				<xp:image url="intec-logo-medium1.gif" id="image1"
-					style="float:left" alt="Intec Systems Ltd">
+					style="float:right" alt="Intec Systems Ltd">
 				</xp:image>
-				<!-- Title -->
-				<xp:text escape="true" id="computedField1" value="Welcome"
-					tagName="h1" style="clear:left;">
-				</xp:text>
-				<br />
-				<xp:div styleClass="lotusInfoBox">
+				<xp:div styleClass="lotusInfoBox" style="clear:right;text-align:left;">
 					<xp:text escape="false">
-						<xp:this.value><![CDATA[]]>
+						<xp:this.value><![CDATA[Now <b>OpenLog</b> is easier and more flexible than ever before to use in XPages.<br/><br/>
+						<div>
+						<ul>
+						<li>It is Apache licensed</li>
+						<li>It can be used in your managed beans and other Java classes, as it has ever since XPages Help Application.</li>
+						<li>It can be used directly from SSJS with as little as <i>openLogBean.addError(e,this);</i>.</li>
+						<li>From SSJS all caught errors on the page are logged out together, at the end of the request.</li>
+						<li>Only two method names are used from SSJS, one to add an error, one to add an event,
+						making it easy to pick up</li>
+						<li>From SSJS you only need to pass the information you wish. There is no need to pass nulls or empty strings.</li>
+						<li>From SSJS only one unique error per component is logged, regardless of how many times
+						the error is encountered during the refresh lifecycle. That is not available from any other
+						current logging mechanism.</li>
+						<li>In SSJS, if you use a custom error page, uncaught errors will also be logged.</li>
+						<li>Uncaught errors will be logged for the page the error occurs on, not your custom error page.</li>
+						<li>This database includes full documentation of how to log errors.</li>
+						<li>You can define the OpenLog path and backup debug level (in case of problems
+						creating an OpenLog document) without needing to change the code.</li>
+						<li>Those variables can be defined in xsp.properties on the NSF or the server.
+						You can also define a backup in the notes.ini. If nothing is set "OpenLog.nsf" and "0" are the defaults.</li>
+						<li>The functionality and code can be added to an NSF. Alternatively, it is available
+						as an Extension Library.</li>
+						</ul></div><br/>
+
+						Set the OpenLog path by using xsp.openlog.filepath in the xsp.properties of the
+						database or server or in the server's notes.ini. They are retrieved in that order.<br/><br/>
+
+						Set the default debug level by using xsp.openlog.debugLevel in the same places. This defines
+						what will be logged to the server console if an OpenLog document cannot be created -
+						nothing (0), the error message (1), or the error message and full stack trace (2).
+						See this database's xsp.properties for implementation.
+
+						See <b>Using from Java</b> for full documentation on accessing it in Java code.<br/><br/>
+
+						See <b>Using from SSJS</b> for full documentation of how to use it from SSJS.<br/><br/>
+
+						The <b>Examples</b> area provides some examples you can look at. "Error On Load" and "Two Errors"
+						will re-route to the error page.<br/><br/>
+
+						One important note on XPages custom error pages. <b>Never use XPages events on an error page.</b>
+						For example, a Section control on an XPage adds events to expand / collapse the section.
+						The section will work as normal if the error page is triggered from a full refresh. But if the error
+						page is triggered from a partial refresh, the XSP Command Manager only prints HTML to the browser,
+						it doesn't attach events. So your section will not work. <b>Error</b> is the custom error page in
+						this application and gives an example of an XPage with only standard HTML.]]>
 						</xp:this.value>
 					</xp:text>
 				</xp:div>
