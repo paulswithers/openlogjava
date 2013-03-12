@@ -463,8 +463,20 @@ public class OpenLogItem implements Serializable {
 	public static String getLogDbName() {
 		if ("".equals(_logDbName)) {
 			_logDbName = getXspProperty("xsp.openlog.filepath", "OpenLog.nsf");
+			if ("[CURRENT]".equals(_logDbName.toUpperCase())) {
+				setLogDbName(getThisDatabasePath());
+			}
 		}
 		return _logDbName;
+	}
+
+	private static String getThisDatabasePath() {
+		try {
+			return getCurrentDatabase().getFilePath();
+		} catch (NotesException e) {
+			debugPrint(e);
+			return "";
+		}
 	}
 
 	/**
@@ -611,18 +623,17 @@ public class OpenLogItem implements Serializable {
 		return retVal;
 	}
 
-	@SuppressWarnings("finally")
 	private static String getIniVar(String propertyName, String defaultValue) {
-		String retVal = defaultValue;
 		try {
 			String newVal = getSession().getEnvironmentString(propertyName, true);
 			if (!"".equals(newVal)) {
-				retVal = newVal;
+				return newVal;
+			} else {
+				return defaultValue;
 			}
 		} catch (NotesException e) {
 			debugPrint(e);
-		} finally {
-			return retVal;
+			return defaultValue;
 		}
 	}
 
