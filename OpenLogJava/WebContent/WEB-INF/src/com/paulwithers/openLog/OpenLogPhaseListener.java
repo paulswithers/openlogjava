@@ -32,8 +32,8 @@ import lotus.domino.Document;
 
 import com.ibm.jscript.InterpretException;
 import com.ibm.xsp.exception.EvaluationExceptionEx;
-import com.ibm.xsp.extlib.util.ExtLibUtil;
 import com.paulwithers.openLog.OpenLogErrorHolder.EventError;
+import com.timtripcony.util.JSFUtil;
 
 /**
  * @author withersp
@@ -107,7 +107,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 							Document passedDoc = null;
 							if (!"".equals(error.getUnid())) {
 								try {
-									Database currDb = ExtLibUtil.getCurrentDatabase();
+									Database currDb = JSFUtil.getCurrentDatabase();
 									passedDoc = currDb.getDocumentByUNID(error.getUnid());
 								} catch (Exception e) {
 									msg = msg + "\n\nCould not retrieve document but UNID was passed: "
@@ -134,7 +134,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 							Document passedDoc = null;
 							if (!"".equals(eventObj.getUnid())) {
 								try {
-									Database currDb = ExtLibUtil.getCurrentDatabase();
+									Database currDb = JSFUtil.getCurrentDatabase();
 									passedDoc = currDb.getDocumentByUNID(eventObj.getUnid());
 								} catch (Exception e) {
 									msg = msg + "\n\nCould not retrieve document but UNID was passed: "

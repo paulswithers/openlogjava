@@ -97,7 +97,7 @@ import lotus.domino.RichTextItem;
 import lotus.domino.Session;
 
 import com.ibm.xsp.application.ApplicationEx;
-import com.ibm.xsp.extlib.util.ExtLibUtil;
+import com.timtripcony.util.JSFUtil;
 
 public class OpenLogItem implements Serializable {
 	/*
@@ -262,10 +262,10 @@ public class OpenLogItem implements Serializable {
 	public static void setThisAgent(boolean currPage) {
 		String fromPage = "";
 		if (currPage) {
-			fromPage = ExtLibUtil.getXspContext().getUrl().toSiteRelativeString(ExtLibUtil.getXspContext());
+			fromPage = JSFUtil.getXSPContext().getUrl().toSiteRelativeString(JSFUtil.getXSPContext());
 			fromPage = fromPage.substring(0);
 		} else {
-			String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
+			String[] historyUrls = JSFUtil.getXSPContext().getHistoryUrls();
 			if (historyUrls.length > 1) {
 				fromPage = historyUrls[1];
 			} else {
@@ -639,7 +639,7 @@ public class OpenLogItem implements Serializable {
 
 	private static Session getSession() {
 		if (_session == null) {
-			_session = ExtLibUtil.getCurrentSession();
+			_session = JSFUtil.getCurrentSession();
 		} else {
 			try {
 				@SuppressWarnings("unused")
@@ -648,7 +648,7 @@ public class OpenLogItem implements Serializable {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
-					_session = ExtLibUtil.getCurrentSession();
+					_session = JSFUtil.getCurrentSession();
 				} catch (Exception e) {
 					debugPrint(e);
 				}
@@ -708,7 +708,7 @@ public class OpenLogItem implements Serializable {
 			StackTraceElement[] s = ee.getStackTrace();
 			FacesMessage m = new FacesMessage("Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber()
 					+ ": " + ee.toString());
-			ExtLibUtil.getXspContext().getFacesContext().addMessage(null, m);
+			JSFUtil.getXSPContext().getFacesContext().addMessage(null, m);
 			setBase(ee);
 
 			// if (ee.getMessage().length() > 0) {
