@@ -71,7 +71,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 						InterpretException ie = (InterpretException) ee.getCause();
 						String msg = "";
 						msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
-								+ " property/value, line " + Integer.toString(ie.getErrorLine() + 1) + ":\n\n"
+								+ " property/event, line " + Integer.toString(ie.getErrorLine()) + ":\n\n"
 								+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
 						OpenLogItem.logErrorEx(ee, msg, null, null);
 
@@ -82,7 +82,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 						InterpretException ie = (InterpretException) ee.getCause();
 						String msg = "";
 						msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
-								+ " property/value:\n\n" + Integer.toString(ie.getErrorLine() + 1) + ":\n\n"
+								+ " property/event:\n\n" + Integer.toString(ie.getErrorLine()) + ":\n\n"
 								+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
 						OpenLogItem.logErrorEx(ee, msg, null, null);
 					}
