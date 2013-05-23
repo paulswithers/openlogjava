@@ -24,6 +24,11 @@
 				</xp:image>
 				<!-- Title -->
 				
+				<xp:text escape="false">
+						<xp:this.value><![CDATA[This page gives examples of an uncaught error on an event.
+						Click the button and it will redirect to the Errors page.]]>
+						</xp:this.value>
+					</xp:text>
 				<xp:button value="This fails" id="button1">
 					<xp:eventHandler event="onclick" submit="true"
 						refreshMode="complete">

@@ -88,6 +88,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import lotus.domino.Database;
 import lotus.domino.DateTime;
@@ -182,6 +183,7 @@ public class OpenLogItem implements Serializable {
 	private static String _accessLevel;
 	private static Vector<String> _userRoles;
 	private static Vector<String> _clientVersion;
+	private static Boolean _displayError;
 
 	private String _formName;
 	private static Level _severity;
@@ -261,13 +263,10 @@ public class OpenLogItem implements Serializable {
 
 	public static void setThisAgent(boolean currPage) {
 		String fromPage = "";
+		String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
 		if (currPage) {
-			String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
 			fromPage = historyUrls[0];
-			//fromPage = ExtLibUtil.getXspContext().getUrl().toSiteRelativeString(ExtLibUtil.getXspContext());
-			//fromPage = fromPage.substring(0);
 		} else {
-			String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
 			if (historyUrls.length > 1) {
 				fromPage = historyUrls[1];
 			} else {
@@ -479,6 +478,22 @@ public class OpenLogItem implements Serializable {
 			debugPrint(e);
 			return "";
 		}
+	}
+
+	public static Boolean getDisplayError() {
+		if (null == _displayError) {
+			String dummyVar = getXspProperty("xsp.openlog.displayError", "true");
+			if ("FALSE".equals(_logDbName.toUpperCase())) {
+				setDisplayError(false);
+			} else {
+				setDisplayError(true);
+			}
+		}
+		return _displayError;
+	}
+
+	public static void setDisplayError(Boolean error) {
+		_displayError = error;
 	}
 
 	/**
@@ -925,13 +940,19 @@ public class OpenLogItem implements Serializable {
 
 			Throwable ee = getBase();
 			StackTraceElement ste = ee.getStackTrace()[0];
+			String errMsg = "";
 			if (ee instanceof NotesException) {
 				logDoc.replaceItemValue("LogErrorNumber", ((NotesException) ee).id);
-				logDoc.replaceItemValue("LogErrorMessage", ((NotesException) ee).text);
+				errMsg = ((NotesException) ee).text;
+			} else if ("Interpret exception".equals(ee.getMessage())
+					&& ee instanceof com.ibm.jscript.JavaScriptException) {
+				com.ibm.jscript.InterpretException ie = (com.ibm.jscript.InterpretException) ee;
+				errMsg = "Expression Language Interpret Exception " + ie.getExpressionText();
 			} else {
-				logDoc.replaceItemValue("LogErrorMessage", ee.getStackTrace()[0].toString());
+				errMsg = ee.getMessage();
 			}
 
+			logDoc.replaceItemValue("LogErrorMessage", errMsg);
 			logDoc.replaceItemValue("LogStackTrace", getStackTrace(ee));
 			logDoc.replaceItemValue("LogErrorLine", ste.getLineNumber());
 			logDoc.replaceItemValue("LogSeverity", getSeverity().getName());
@@ -1036,5 +1057,15 @@ public class OpenLogItem implements Serializable {
 		} catch (Exception e) {
 			// at this point, if we have an error just discard it
 		}
+	}
+
+	/**
+	 * @param component
+	 *            String component ID
+	 * @param msg
+	 *            String message to be passed back to the browser
+	 */
+	public static void addFacesMessage(String component, String msg) {
+		FacesContext.getCurrentInstance().addMessage(component, new FacesMessage(msg));
 	}
 }

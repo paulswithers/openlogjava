@@ -28,7 +28,7 @@
 						each piece of code includes a comment of which property the error is thrown from. That's
 						because thrown errors/events do not have a reference to the property (e.g. rendered )
 						or event (e.g. onclick) the error/event is coded into.<br/><br/>
-						On load three events and three errors will be captured - for the rendered property,
+						On load one event and one error will be captured - for the rendered property,
 						the value property and the validator.<br/><br/>
 						On clicking the button, three events and errors will be captured - for the rendered property,
 						the value property and the button click. The validator is computed on page load, so nothing
@@ -47,7 +47,7 @@
 	return true;
 }}]]>
 					</xp:this.rendered>
-					<xp:this.value><![CDATA[#{javascript:try {
+					<xp:this.value><![CDATA[${javascript:try {
 	// value property
 	openLogBean.addEvent("Value event",this);
 	com.paulwithers.openLog.OpenLogItem.getXspProperty("xsp.openlog.filepath","");
@@ -63,7 +63,7 @@
 							<xp:this.loaded><![CDATA[${javascript:try {
 	// validateRequired
 	openLogBean.addEvent("Validate Required event",this);
-	com.paulwithers.openLog.OpenLogItem.getXspProperty("xsp.openlog.filepath","");
+	com.paulwithers.openLog.OpenLogItem.getMyXspProperty("xsp.openlog.filepath","");
 } catch(e) {
 	openLogBean.addError(e,this);
 	return true;
@@ -72,8 +72,8 @@
 					</xp:this.validators>
 				</xp:inputText>
 				<xp:button value="Throw Event Error" id="button1">
-					<xp:eventHandler event="onclick" submit="true"
-						refreshMode="complete" immediate="true">
+					<xp:eventHandler event="onclick" submit="true" refreshMode="complete"
+						immediate="true">
 						<xp:this.action><![CDATA[#{javascript:try {
 	// button event
 	openLogBean.addEvent("Button click event",this.getParent());
@@ -82,7 +82,9 @@
 	openLogBean.addError(e,this.getParent());
 	return true;
 }}]]></xp:this.action>
-					</xp:eventHandler></xp:button>
+					</xp:eventHandler>
+				</xp:button>
+				<xp:messages id="messages1"></xp:messages>
 			</xp:div>
 		</xp:this.facets>
 	</xc:ccLayoutOneUI>

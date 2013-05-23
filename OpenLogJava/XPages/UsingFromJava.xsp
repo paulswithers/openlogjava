@@ -38,7 +38,9 @@
 						<li><i><b>OpenLogItem.logErrorEx(Throwable, String, Level, Document)</b></i>: first param is an Exception / Throwable
 						or null; second param is a String custom error message; third param is a java.util.logging.Level
 						object - Level.SEVERE, Level.WARNING, Level.INFO, Level.CONFIG, Level.FINE, Level.FINER, or
-						Level.FINEST; fourth param is a Document object or null.</li>
+						Level.FINEST; fourth param is a Document object or null. (If you're passing a specific error 
+						I would recommend OpenLogItem.logError(new Throwable("Short Message"), "Full message",....). That way 
+						the short message will show in the view but the full message in the document.</li>
 						<li><i><b>OpenLogItem.logEvent(Throwable, String, Level, Document)</b></i>: params as above.</li>
 						<li><i><b>OpenLogItem.logEvent(Session, Throwable, String, Level, Document)</b></i>: params as above,
 						plus the ability to pass a different session.</li>

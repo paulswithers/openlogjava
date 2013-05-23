@@ -50,6 +50,10 @@
 							<xe:pageTreeNode label="Caught Error" page="/ThrownError.xsp">
 								<xe:this.selected><![CDATA[${compositeData.selected=="thrown"}]]></xe:this.selected>
 							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Caught Error With EL Object" page="/ThrownErrorEL.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="thrownel"}]]></xe:this.selected>
+							</xe:pageTreeNode>
 						</xe:this.children>
 					</xe:basicContainerNode>
 				</xe:this.treeNodes>
