@@ -14,8 +14,7 @@
 	-->
 
 	<xp:panel id="applicationLayout1">
-		<xp:this.facets>
-			<xp:panel id="navigator1" xp:key="LeftColumn">
+			<xp:panel id="navigator1" style="float:left">
 				<xp:label value="Documentation"></xp:label>
 				<xp:br></xp:br>
 				<xp:link text="Home" value="/Home.xsp">
@@ -47,9 +46,11 @@
 
 				<xp:link text="Caught Error" value="/ThrownError.xsp">
 				</xp:link>
+
+				<xp:link text="Caught Error" value="/ThrownErrorEL.xsp">
+				</xp:link>
 				<xp:br></xp:br>
 			</xp:panel>
-		</xp:this.facets>
 		<xp:callback facetName="facet_1" id="callback1"></xp:callback>
 	</xp:panel>
 </xp:view>
