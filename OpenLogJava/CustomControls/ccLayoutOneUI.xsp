@@ -13,53 +13,43 @@
 		permissions and limitations under the License
 	-->
 
-	<xe:applicationLayout id="applicationLayout1">
+	<xp:panel id="applicationLayout1">
 		<xp:this.facets>
-			<xe:navigator id="navigator1" xp:key="LeftColumn">
-				<xe:this.treeNodes>
-					<xe:basicContainerNode label="Documentation">
-						<xe:this.children>
-							<xe:pageTreeNode label="Home" page="/Home.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="home"}]]></xe:this.selected>
-							</xe:pageTreeNode>
+			<xp:panel id="navigator1" xp:key="LeftColumn">
+				<xp:label value="Documentation"></xp:label>
+				<xp:br></xp:br>
+				<xp:link text="Home" value="/Home.xsp">
+				</xp:link>
+				<xp:br></xp:br>
 
-							<xe:pageTreeNode label="Using from SSJS" page="/UsingFromSSJS.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="using"}]]></xe:this.selected>
-							</xe:pageTreeNode>
+				<xp:link text="Using from SSJS" value="/UsingFromSSJS.xsp">
+				</xp:link>
+				<xp:br></xp:br>
 
-							<xe:pageTreeNode label="Using from Java" page="/UsingFromJava.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="usingJava"}]]></xe:this.selected>
-							</xe:pageTreeNode>
-						</xe:this.children>
-					</xe:basicContainerNode>
+				<xp:link text="Using from Java" value="/UsingFromJava.xsp">
+				</xp:link>
+				<xp:br></xp:br>
+				
+				<xp:label value="Examples"></xp:label>
+				<xp:br></xp:br>
+				
+				<xp:link text="Error On Load" value="/ErrorOnLoad.xsp">
+				</xp:link>
+				<xp:br></xp:br>
+				
+				<xp:link text="Error On Click" value="/ErrorOnClick.xsp">
+				</xp:link>
+				<xp:br></xp:br>
 
-					<xe:basicContainerNode label="Examples">
-						<xe:this.children>
-							<xe:pageTreeNode label="Error On Load" page="/ErrorOnLoad.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="load"}]]></xe:this.selected>
-							</xe:pageTreeNode>
+				<xp:link text="Two Errors" value="/TwoErrors.xsp">
+				</xp:link>
+				<xp:br></xp:br>
 
-							<xe:pageTreeNode label="Error On Click" page="/ErrorOnClick.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
-							</xe:pageTreeNode>
-
-							<xe:pageTreeNode label="Two Errors" page="/TwoErrors.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="two"}]]></xe:this.selected>
-							</xe:pageTreeNode>
-
-							<xe:pageTreeNode label="Caught Error" page="/ThrownError.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="thrown"}]]></xe:this.selected>
-							</xe:pageTreeNode>
-						</xe:this.children>
-					</xe:basicContainerNode>
-				</xe:this.treeNodes>
-			</xe:navigator>
+				<xp:link text="Caught Error" value="/ThrownError.xsp">
+				</xp:link>
+				<xp:br></xp:br>
+			</xp:panel>
 		</xp:this.facets>
 		<xp:callback facetName="facet_1" id="callback1"></xp:callback>
-		<xe:this.configuration>
-			<xe:oneuiApplication placeBar="false" footer="false"
-				legal="false" titleBarName="OpenLog Java / SSJS">
-			</xe:oneuiApplication>
-		</xe:this.configuration>
-	</xe:applicationLayout>
+	</xp:panel>
 </xp:view>

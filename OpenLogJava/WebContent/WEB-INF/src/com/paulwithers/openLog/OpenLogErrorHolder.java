@@ -36,6 +36,7 @@ public class OpenLogErrorHolder implements Serializable {
 	//it can still consider them equal, and ignore them - http://blog.tremend.ro/2007/05/17/problem-when-adding-elements-to-a-treesetcomparator-some-elements-are-not-added/
 	private LinkedHashSet<EventError> errors;
 	private LinkedHashSet<EventError> events;
+	private LinkedHashSet<EventError> loggedErrors = null;
 	private static final long serialVersionUID = 1L;
 
 	public OpenLogErrorHolder() {
@@ -48,6 +49,14 @@ public class OpenLogErrorHolder implements Serializable {
 
 	public LinkedHashSet<EventError> getEvents() {
 		return events;
+	}
+
+	public LinkedHashSet<EventError> getLoggedErrors() {
+		return errors;
+	}
+
+	public void setLoggedErrors(LinkedHashSet<EventError> loggedErrors) {
+		this.loggedErrors = loggedErrors;
 	}
 
 	/**
@@ -72,6 +81,23 @@ public class OpenLogErrorHolder implements Serializable {
 		newErr.setSeverity(severity);
 		newErr.setUnid(unid);
 		return newErr;
+	}
+
+	public InterpretException getInterpretException(Object je) {
+		try {
+			String className = je.getClass().getName();
+			if ("com.ibm.jscript.InterpretException".equals(className)) {
+				return (InterpretException) je;
+			} else {
+				Throwable t = new Throwable(je.toString());
+				InterpretException ie = new InterpretException(t);
+				ie.setExpressionText(t.getMessage());
+				return ie;
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			return new InterpretException(new Throwable(t.getMessage()));
+		}
 	}
 
 	/**
@@ -99,8 +125,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addError(InterpretException ie, UIComponent control, int severity, String unid) {
+	public void addError(Object je, UIComponent control, int severity, String unid) {
 		try {
+			InterpretException ie = getInterpretException(je);
 			EventError newErr = createEventError(ie, "", control, severity, unid);
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -131,8 +158,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addError(InterpretException ie, UIComponent control, int severity) {
+	public void addError(Object je, UIComponent control, int severity) {
 		try {
+			InterpretException ie = getInterpretException(je);
 			EventError newErr = createEventError(ie, "", control, severity, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -160,8 +188,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            To pass no control, call openLogBean.addError(e, null)
 	 */
-	public void addError(InterpretException ie, UIComponent control) {
+	public void addError(Object je, UIComponent control) {
 		try {
+			InterpretException ie = getInterpretException(je);
 			EventError newErr = createEventError(ie, "", control, 4, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -198,8 +227,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addError(InterpretException ie, String msg, UIComponent control, int severity, String unid) {
+	public void addError(Object je, String msg, UIComponent control, int severity, String unid) {
 		try {
+			InterpretException ie = getInterpretException(je);
 			EventError newErr = createEventError(ie, msg, control, severity, unid);
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -232,8 +262,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addError(InterpretException ie, String msg, UIComponent control, int severity) {
+	public void addError(Object je, String msg, UIComponent control, int severity) {
 		try {
+			InterpretException ie = getInterpretException(je);
 			EventError newErr = createEventError(ie, msg, control, severity, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -263,8 +294,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            To pass no control, call openLogBean.addError(e, null)
 	 */
-	public void addError(InterpretException ie, String msg, UIComponent control) {
+	public void addError(Object je, String msg, UIComponent control) {
 		try {
+			InterpretException ie = getInterpretException(je);
 			EventError newErr = createEventError(ie, msg, control, 4, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -280,6 +312,9 @@ public class OpenLogErrorHolder implements Serializable {
 		if (null == getErrors()) {
 			errors = new LinkedHashSet<EventError>();
 		}
+
+		addFacesMessageForError(newErr);
+
 		errors.add(newErr);
 	}
 
@@ -500,6 +535,36 @@ public class OpenLogErrorHolder implements Serializable {
 
 		private OpenLogErrorHolder getOuterType() {
 			return OpenLogErrorHolder.this;
+		}
+
+	}
+
+	/**
+	 * @param newErr
+	 *            error to be added to facesMessage
+	 */
+	public void addFacesMessageForError(EventError newErr) {
+		// Quit if getLoggedErrors() is null. Will be initialised during beforePhase of renderResponse
+		if (null == loggedErrors) {
+			return;
+		}
+
+		// If not already added to facesMessage, add it
+		if (!loggedErrors.contains(newErr)) {
+			String dispErr = newErr.getError().getLocalizedMessage();
+			String ctrlId = newErr.getControl().getId();
+			if ("Interpret exception".equals(dispErr)) {
+				dispErr = newErr.getError().getExpressionText();
+			}
+			if (OpenLogItem.getDisplayError()) {
+				if (null == ctrlId) {
+					OpenLogItem.addFacesMessage(ctrlId, dispErr);
+				} else {
+					OpenLogItem.addFacesMessage(ctrlId, ctrlId.toUpperCase() + ": " + dispErr);
+				}
+			}
+
+			loggedErrors.add(newErr);
 		}
 
 	}

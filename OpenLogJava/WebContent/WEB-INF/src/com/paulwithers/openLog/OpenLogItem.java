@@ -88,6 +88,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import lotus.domino.Database;
 import lotus.domino.DateTime;
@@ -182,6 +183,8 @@ public class OpenLogItem implements Serializable {
 	private static String _accessLevel;
 	private static Vector<String> _userRoles;
 	private static Vector<String> _clientVersion;
+	private static Boolean _displayError;
+	private static String _displayErrorGeneric;
 
 	private String _formName;
 	private static Level _severity;
@@ -261,11 +264,10 @@ public class OpenLogItem implements Serializable {
 
 	public static void setThisAgent(boolean currPage) {
 		String fromPage = "";
+		String[] historyUrls = JSFUtil.getXSPContext().getHistoryUrls();
 		if (currPage) {
-			fromPage = JSFUtil.getXSPContext().getUrl().toSiteRelativeString(JSFUtil.getXSPContext());
-			fromPage = fromPage.substring(0);
+			fromPage = historyUrls[0];
 		} else {
-			String[] historyUrls = JSFUtil.getXSPContext().getHistoryUrls();
 			if (historyUrls.length > 1) {
 				fromPage = historyUrls[1];
 			} else {
@@ -480,6 +482,39 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
+	 * @return whether errors should be displayed or not
+	 */
+	public static Boolean getDisplayError() {
+		if (null == _displayError) {
+			String dummyVar = getXspProperty("xsp.openlog.displayError", "true");
+			if ("FALSE".equals(dummyVar.toUpperCase())) {
+				setDisplayError(false);
+			} else {
+				setDisplayError(true);
+			}
+		}
+		return _displayError;
+	}
+
+	/**
+	 * @param error
+	 *            whether or not to display the errors
+	 */
+	public static void setDisplayError(Boolean error) {
+		_displayError = error;
+	}
+
+	/**
+	 * @return String of a generic error message or an empty string
+	 */
+	public static String getDisplayErrorGeneric() {
+		if (null == _displayErrorGeneric) {
+			_displayErrorGeneric = getXspProperty("xsp.openlog.genericErrorMessage", "");
+		}
+		return _displayErrorGeneric;
+	}
+
+	/**
 	 * @return the logFormName
 	 */
 	public String getLogFormName() {
@@ -586,7 +621,7 @@ public class OpenLogItem implements Serializable {
 	// 0 -- internal errors are discarded
 	// 1 -- Exception messages from internal errors are printed
 	// 2 -- stack traces from internal errors are also printed
-	public static String olDebugLevel = getXspProperty("xsp.openlog.debugLevel", "1");
+	public static String olDebugLevel = getXspProperty("xsp.openlog.debugLevel", "2");
 
 	// debugOut is the PrintStream that errors will be printed to, for debug
 	// levels
@@ -704,6 +739,17 @@ public class OpenLogItem implements Serializable {
 	 * information and saves it to the OpenLog database.
 	 */
 	public static String logError(Throwable ee) {
+		if (ee != null) {
+			for (StackTraceElement elem : ee.getStackTrace()) {
+				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
+					// NTF - we are by definition in a loop
+					System.out.println(ee.toString());
+					debugPrint(ee);
+					_logSuccess = false;
+					return "";
+				}
+			}
+		}
 		try {
 			StackTraceElement[] s = ee.getStackTrace();
 			FacesMessage m = new FacesMessage("Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber()
@@ -743,6 +789,17 @@ public class OpenLogItem implements Serializable {
 	 * DocLink to that Document will be added to the log document).
 	 */
 	public static String logErrorEx(Throwable ee, String msg, Level severityType, Document doc) {
+		if (ee != null) {
+			for (StackTraceElement elem : ee.getStackTrace()) {
+				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
+					// NTF - we are by definition in a loop
+					System.out.println(ee.toString());
+					debugPrint(ee);
+					_logSuccess = false;
+					return "";
+				}
+			}
+		}
 		try {
 			setBase((ee == null ? new Throwable() : ee));
 			setMessage((msg == null ? "" : msg));
@@ -923,13 +980,19 @@ public class OpenLogItem implements Serializable {
 
 			Throwable ee = getBase();
 			StackTraceElement ste = ee.getStackTrace()[0];
+			String errMsg = "";
 			if (ee instanceof NotesException) {
 				logDoc.replaceItemValue("LogErrorNumber", ((NotesException) ee).id);
-				logDoc.replaceItemValue("LogErrorMessage", ((NotesException) ee).text);
+				errMsg = ((NotesException) ee).text;
+			} else if ("Interpret exception".equals(ee.getMessage())
+					&& ee instanceof com.ibm.jscript.JavaScriptException) {
+				com.ibm.jscript.InterpretException ie = (com.ibm.jscript.InterpretException) ee;
+				errMsg = "Expression Language Interpret Exception " + ie.getExpressionText();
 			} else {
-				logDoc.replaceItemValue("LogErrorMessage", ee.getStackTrace()[0].toString());
+				errMsg = ee.getMessage();
 			}
 
+			logDoc.replaceItemValue("LogErrorMessage", errMsg);
 			logDoc.replaceItemValue("LogStackTrace", getStackTrace(ee));
 			logDoc.replaceItemValue("LogErrorLine", ste.getLineNumber());
 			logDoc.replaceItemValue("LogSeverity", getSeverity().getName());
@@ -1008,7 +1071,7 @@ public class OpenLogItem implements Serializable {
 	 * This method decides what to do with any Exceptions that we encounter internal to this class, based on the
 	 * olDebugLevel variable.
 	 */
-	private static void debugPrint(Exception ee) {
+	private static void debugPrint(Throwable ee) {
 		if ((ee == null) || (debugOut == null)) return;
 
 		try {
@@ -1034,5 +1097,23 @@ public class OpenLogItem implements Serializable {
 		} catch (Exception e) {
 			// at this point, if we have an error just discard it
 		}
+	}
+
+	/**
+	 * @param component
+	 *            String component ID
+	 * @param msg
+	 *            String message to be passed back to the browser
+	 */
+	public static void addFacesMessage(String component, String msg) {
+		if (!"".equals(getDisplayErrorGeneric())) {
+			if (null == JSFUtil.getRequestScope().get("genericOpenLogMessage")) {
+				JSFUtil.getRequestScope().put("genericOpenLogMessage", "Added");
+			} else {
+				return;
+			}
+			msg = _displayErrorGeneric;
+		}
+		FacesContext.getCurrentInstance().addMessage(component, new FacesMessage(msg));
 	}
 }

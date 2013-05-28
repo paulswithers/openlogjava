@@ -18,6 +18,7 @@ package com.paulwithers.openLog;
 
  */
 
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -45,7 +46,24 @@ public class OpenLogPhaseListener implements PhaseListener {
 	private static final int RENDER_RESPONSE = 6;
 
 	public void beforePhase(PhaseEvent event) {
-
+		// Add FacesContext messages for anything captured so far
+		if (RENDER_RESPONSE == event.getPhaseId().getOrdinal()) {
+			Map<String, Object> r = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+			if (null == r.get("error")) {
+				OpenLogItem.setThisAgent(true);
+			}
+			if (null != r.get("openLogBean")) {
+				// requestScope.openLogBean is not null, the developer has called openLogBean.addError(e,this)
+				OpenLogErrorHolder errList = (OpenLogErrorHolder) r.get("openLogBean");
+				errList.setLoggedErrors(new LinkedHashSet<EventError>());
+				// loop through the ArrayList of EventError objects and add any errors already captured as a facesMessage
+				if (null != errList.getErrors()) {
+					for (EventError error : errList.getErrors()) {
+						errList.addFacesMessageForError(error);
+					}
+				}
+			}
+		}
 	}
 
 	/*
@@ -187,5 +205,4 @@ public class OpenLogPhaseListener implements PhaseListener {
 	public PhaseId getPhaseId() {
 		return PhaseId.ANY_PHASE;
 	}
-
 }

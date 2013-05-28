@@ -18,7 +18,6 @@
     <import optional="true" plugin="com.ibm.xsp.domino"/>
     <import optional="true" plugin="com.ibm.notes.java.api"/>
     <import optional="true" plugin="com.ibm.xsp.rcp"/>
-    <import optional="true" plugin="com.ibm.xsp.extlib"/>
     <!--AUTOGEN-END-BUILDER: End of automatically generated section-->
   </requires>
 </plugin>
