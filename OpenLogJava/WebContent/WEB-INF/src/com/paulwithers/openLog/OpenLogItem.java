@@ -184,6 +184,7 @@ public class OpenLogItem implements Serializable {
 	private static Vector<String> _userRoles;
 	private static Vector<String> _clientVersion;
 	private static Boolean _displayError;
+	private static String _displayErrorGeneric;
 
 	private String _formName;
 	private static Level _severity;
@@ -480,10 +481,13 @@ public class OpenLogItem implements Serializable {
 		}
 	}
 
+	/**
+	 * @return whether errors should be displayed or not
+	 */
 	public static Boolean getDisplayError() {
 		if (null == _displayError) {
 			String dummyVar = getXspProperty("xsp.openlog.displayError", "true");
-			if ("FALSE".equals(_logDbName.toUpperCase())) {
+			if ("FALSE".equals(dummyVar.toUpperCase())) {
 				setDisplayError(false);
 			} else {
 				setDisplayError(true);
@@ -492,8 +496,22 @@ public class OpenLogItem implements Serializable {
 		return _displayError;
 	}
 
+	/**
+	 * @param error
+	 *            whether or not to display the errors
+	 */
 	public static void setDisplayError(Boolean error) {
 		_displayError = error;
+	}
+
+	/**
+	 * @return String of a generic error message or an empty string
+	 */
+	public static String getDisplayErrorGeneric() {
+		if (null == _displayErrorGeneric) {
+			_displayErrorGeneric = getXspProperty("xsp.openlog.genericErrorMessage", "");
+		}
+		return _displayErrorGeneric;
 	}
 
 	/**
@@ -603,7 +621,7 @@ public class OpenLogItem implements Serializable {
 	// 0 -- internal errors are discarded
 	// 1 -- Exception messages from internal errors are printed
 	// 2 -- stack traces from internal errors are also printed
-	public static String olDebugLevel = getXspProperty("xsp.openlog.debugLevel", "1");
+	public static String olDebugLevel = getXspProperty("xsp.openlog.debugLevel", "2");
 
 	// debugOut is the PrintStream that errors will be printed to, for debug
 	// levels
@@ -721,6 +739,17 @@ public class OpenLogItem implements Serializable {
 	 * information and saves it to the OpenLog database.
 	 */
 	public static String logError(Throwable ee) {
+		if (ee != null) {
+			for (StackTraceElement elem : ee.getStackTrace()) {
+				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
+					// NTF - we are by definition in a loop
+					System.out.println(ee.toString());
+					debugPrint(ee);
+					_logSuccess = false;
+					return "";
+				}
+			}
+		}
 		try {
 			StackTraceElement[] s = ee.getStackTrace();
 			FacesMessage m = new FacesMessage("Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber()
@@ -760,6 +789,17 @@ public class OpenLogItem implements Serializable {
 	 * DocLink to that Document will be added to the log document).
 	 */
 	public static String logErrorEx(Throwable ee, String msg, Level severityType, Document doc) {
+		if (ee != null) {
+			for (StackTraceElement elem : ee.getStackTrace()) {
+				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
+					// NTF - we are by definition in a loop
+					System.out.println(ee.toString());
+					debugPrint(ee);
+					_logSuccess = false;
+					return "";
+				}
+			}
+		}
 		try {
 			setBase((ee == null ? new Throwable() : ee));
 			setMessage((msg == null ? "" : msg));
@@ -1031,7 +1071,7 @@ public class OpenLogItem implements Serializable {
 	 * This method decides what to do with any Exceptions that we encounter internal to this class, based on the
 	 * olDebugLevel variable.
 	 */
-	private static void debugPrint(Exception ee) {
+	private static void debugPrint(Throwable ee) {
 		if ((ee == null) || (debugOut == null)) return;
 
 		try {
@@ -1066,6 +1106,14 @@ public class OpenLogItem implements Serializable {
 	 *            String message to be passed back to the browser
 	 */
 	public static void addFacesMessage(String component, String msg) {
+		if (!"".equals(getDisplayErrorGeneric())) {
+			if (null == ExtLibUtil.getRequestScope().get("genericOpenLogMessage")) {
+				ExtLibUtil.getRequestScope().put("genericOpenLogMessage", "Added");
+			} else {
+				return;
+			}
+			msg = _displayErrorGeneric;
+		}
 		FacesContext.getCurrentInstance().addMessage(component, new FacesMessage(msg));
 	}
 }

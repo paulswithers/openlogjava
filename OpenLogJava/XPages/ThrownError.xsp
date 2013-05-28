@@ -30,7 +30,7 @@
 						or event (e.g. onclick) the error/event is coded into.<br/><br/>
 						On load one event and one error will be captured - for the rendered property,
 						the value property and the validator.<br/><br/>
-						On clicking the button, three events and errors will be captured - for the rendered property,
+						On clicking the button, two events and errors will be captured - for the rendered property,
 						the value property and the button click. The validator is computed on page load, so nothing
 						will be captured on refresh. Without the enhancement to ensure unique errors or events,
 						the rendered property would log four times during the refresh.]]>

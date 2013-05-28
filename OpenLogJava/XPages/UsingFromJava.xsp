@@ -44,6 +44,8 @@
 						<li><i><b>OpenLogItem.logEvent(Throwable, String, Level, Document)</b></i>: params as above.</li>
 						<li><i><b>OpenLogItem.logEvent(Session, Throwable, String, Level, Document)</b></i>: params as above,
 						plus the ability to pass a different session.</li>
+						<br/>If you wish to pass a message back to the browser, you can use <b><i>OpenLogItem.addFacesMessage(String 
+						componentName, String message)</i></b>. This checks xsp.openlog.displayError and also xsp.openlog.genericErrorMessage.
 						]]>
 						</xp:this.value>
 					</xp:text>

@@ -49,6 +49,9 @@ public class OpenLogPhaseListener implements PhaseListener {
 		// Add FacesContext messages for anything captured so far
 		if (RENDER_RESPONSE == event.getPhaseId().getOrdinal()) {
 			Map<String, Object> r = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+			if (null == r.get("error")) {
+				OpenLogItem.setThisAgent(true);
+			}
 			if (null != r.get("openLogBean")) {
 				// requestScope.openLogBean is not null, the developer has called openLogBean.addError(e,this)
 				OpenLogErrorHolder errList = (OpenLogErrorHolder) r.get("openLogBean");

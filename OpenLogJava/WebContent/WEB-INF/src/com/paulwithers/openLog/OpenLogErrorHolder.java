@@ -21,9 +21,7 @@ package com.paulwithers.openLog;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 
 import com.ibm.jscript.InterpretException;
 
@@ -92,8 +90,6 @@ public class OpenLogErrorHolder implements Serializable {
 				return (InterpretException) je;
 			} else {
 				Throwable t = new Throwable(je.toString());
-				System.out.println("TEST");
-				System.out.println(t.getMessage());
 				InterpretException ie = new InterpretException(t);
 				ie.setExpressionText(t.getMessage());
 				return ie;
@@ -562,19 +558,15 @@ public class OpenLogErrorHolder implements Serializable {
 			}
 			if (OpenLogItem.getDisplayError()) {
 				if (null == ctrlId) {
-					addFacesMessage(ctrlId, dispErr);
+					OpenLogItem.addFacesMessage(ctrlId, dispErr);
 				} else {
-					addFacesMessage(ctrlId, ctrlId.toUpperCase() + ": " + dispErr);
+					OpenLogItem.addFacesMessage(ctrlId, ctrlId.toUpperCase() + ": " + dispErr);
 				}
 			}
 
 			loggedErrors.add(newErr);
 		}
 
-	}
-
-	public void addFacesMessage(String component, String msg) {
-		FacesContext.getCurrentInstance().addMessage(component, new FacesMessage(msg));
 	}
 
 }
