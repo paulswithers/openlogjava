@@ -992,6 +992,10 @@ public class OpenLogItem implements Serializable {
 				errMsg = ee.getMessage();
 			}
 
+			if (null==errMsg) {
+				errMsg = getMessage();
+			}
+
 			logDoc.replaceItemValue("LogErrorMessage", errMsg);
 			logDoc.replaceItemValue("LogStackTrace", getStackTrace(ee));
 			logDoc.replaceItemValue("LogErrorLine", ste.getLineNumber());

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xp:view xmlns:xp="http://www.ibm.com/xsp/core"
+	xmlns:xc="http://www.ibm.com/xsp/custom">
+
+	<!--
+		Copyright 2013 Paul Withers Licensed under the Apache License, Version 2.0
+		(the "License"); you may not use this file except in compliance with the
+		License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+		or agreed to in writing, software distributed under the License is distributed
+		on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+		express or implied. See the License for the specific language governing
+		permissions and limitations under the License
+	-->
+
+	<xc:ccLayoutOneUI>
+	<xp:this.facets>
+			<xp:div xp:key="facet_1" style="text-align:center" id="panel1">
+				<!-- Images -->
+				<xp:image url="intec-logo-medium1.gif" id="image1" style="float:right"
+					alt="Intec Systems Ltd">
+				</xp:image>
+
+				<xp:div styleClass="lotusInfoBox" style="clear:right;text-align:left;">
+					<xp:text escape="false">
+						<xp:this.value><![CDATA[This page gives examples of an error in a Java method.<br/><br/>
+						On load one error will be captured and logged, from OpenLogTest class in 
+						com.paulwithers.tests.<br/><br/>]]>
+						</xp:this.value>
+					</xp:text>
+				</xp:div>
+				<xp:text id="Test1">
+					<xp:this.value><![CDATA[#{javascript:com.paulwithers.tests.OpenLogTest.demoFail();
+}]]>
+					</xp:this.value>
+				</xp:text>
+				<xp:messages id="messages1"></xp:messages>
+			</xp:div>
+		</xp:this.facets></xc:ccLayoutOneUI></xp:view>
