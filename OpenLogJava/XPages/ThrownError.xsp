@@ -82,7 +82,9 @@
 	openLogBean.addError(e,this.getParent());
 	return true;
 }}]]></xp:this.action>
-					</xp:eventHandler></xp:button>
+					</xp:eventHandler>
+				</xp:button>
+				<xp:messages id="messages1"></xp:messages>
 			</xp:div>
 		</xp:this.facets>
 	</xc:ccLayoutOneUI>

@@ -13,38 +13,27 @@
 		permissions and limitations under the License
 	-->
 
-
-	<xc:ccLayoutOneUI selected="thrownel">
-		<xp:this.facets>
+	<xc:ccLayoutOneUI>
+	<xp:this.facets>
 			<xp:div xp:key="facet_1" style="text-align:center" id="panel1">
 				<!-- Images -->
-				<xp:image url="intec-logo-medium1.gif" id="image1"
-					style="float:right" alt="Intec Systems Ltd">
+				<xp:image url="intec-logo-medium1.gif" id="image1" style="float:right"
+					alt="Intec Systems Ltd">
 				</xp:image>
 
-				<xp:div styleClass="lotusInfoBox"
-					style="clear:right;text-align:left;">
+				<xp:div styleClass="lotusInfoBox" style="clear:right;text-align:left;">
 					<xp:text escape="false">
-						<xp:this.value><![CDATA[This page gives a test page for an error caught that 
-						is not a scripting error but a call to a global EL variable or EL variable's property, 
-						where that variable or property does not exist.
-						<br/>e.g. You're referencing view2.getEntryCount()
-						but view2 does not exist on the XPage.]]>
+						<xp:this.value><![CDATA[This page gives examples of an error in a Java method.<br/><br/>
+						On load one error will be captured and logged, from OpenLogTest class in 
+						com.paulwithers.tests.<br/><br/>]]>
 						</xp:this.value>
 					</xp:text>
 				</xp:div>
-				<xp:button id="button1" value="Test">
-					<xp:eventHandler event="onclick" submit="true"
-						refreshMode="partial" refreshId="panel1">
-						<xp:this.action><![CDATA[#{javascript:try {
-	// value property
-	var count = view1.getEntryCount();
-	print (count);
-} catch(e) {
-	openLogBean.addError(e,this.getParent());
-	return "BLAH";
-}}]]></xp:this.action>
-					</xp:eventHandler></xp:button>
+				<xp:text id="Test1">
+					<xp:this.value><![CDATA[#{javascript:com.paulwithers.tests.OpenLogTest.demoFail();
+}]]>
+					</xp:this.value>
+				</xp:text>
 				<xp:messages id="messages1"></xp:messages>
 			</xp:div>
 		</xp:this.facets>

@@ -46,8 +46,13 @@
 
 				<xp:link text="Caught Error" value="/ThrownError.xsp">
 				</xp:link>
+				<xp:br></xp:br>
 
-				<xp:link text="Caught Error" value="/ThrownErrorEL.xsp">
+				<xp:link text="Caught Error EL" value="/ThrownErrorEL.xsp">
+				</xp:link>
+				<xp:br></xp:br>
+
+				<xp:link text="Java Error" value="/JavaSample.xsp">
 				</xp:link>
 				<xp:br></xp:br>
 			</xp:panel>
