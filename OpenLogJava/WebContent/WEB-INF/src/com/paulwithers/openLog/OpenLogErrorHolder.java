@@ -552,7 +552,10 @@ public class OpenLogErrorHolder implements Serializable {
 		// If not already added to facesMessage, add it
 		if (!loggedErrors.contains(newErr)) {
 			String dispErr = newErr.getError().getLocalizedMessage();
-			String ctrlId = newErr.getControl().getId();
+			String ctrlId = null;
+			if (null != newErr.getControl()) {
+				ctrlId = newErr.getControl().getId();
+			}
 			if ("Interpret exception".equals(dispErr)) {
 				dispErr = newErr.getError().getExpressionText();
 			}
