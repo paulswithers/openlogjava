@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
 <note default='true' class='icon' xmlns='http://www.lotus.com/dxl' version='9.0'
  replicaid='80257B21006F80BD'>
-<noteinfo noteid='11a' unid='E728BA1B457C3F8080257B21006F80CE' sequence='17'>
+<noteinfo noteid='11a' unid='E728BA1B457C3F8080257B21006F80CE' sequence='51'>
 <created><datetime>20130301T201754,70+00</datetime></created>
-<modified><datetime dst='true'>20130405T172833,39+01</datetime></modified>
-<revised><datetime dst='true'>20130405T172833,38+01</datetime></revised>
-<lastaccessed><datetime dst='true'>20130405T172833,39+01</datetime></lastaccessed>
+<modified><datetime dst='true'>20130604T153009,07+01</datetime></modified>
+<revised><datetime dst='true'>20130604T153009,06+01</datetime></revised>
+<lastaccessed><datetime dst='true'>20130604T153009,07+01</datetime></lastaccessed>
 <addedtofile><datetime>20130301T201754,72+00</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Paul Withers/O=Intec</name></updatedby>
+<wassignedby><name>CN=Paul Withers/O=Intec</name></wassignedby>
 <item name='IconBitmap' summary='true'>
 <rawitemdata type='6'>
 AiAgAQAA///////wD///4Af//8AD//4AAH/8AAA/+AAAH/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAA
