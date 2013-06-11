@@ -24,6 +24,7 @@ import java.util.logging.Level;
 
 import javax.faces.FacesException;
 import javax.faces.context.FacesContext;
+import javax.faces.el.PropertyNotFoundException;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
@@ -103,6 +104,21 @@ public class OpenLogPhaseListener implements PhaseListener {
 								+ " property/event:\n\n" + Integer.toString(ie.getErrorLine()) + ":\n\n"
 								+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
 						OpenLogItem.logErrorEx(ee, msg, null, null);
+					} else if ("javax.faces.el.PropertyNotFoundException".equals(error.getClass().getName())) {
+						// Property not found exception, so error is on a component property
+						PropertyNotFoundException pe = (PropertyNotFoundException) error;
+						String msg = "";
+						msg = "PropertyNotFounException Error, cannot locate component:\n\n" + pe.getLocalizedMessage();
+						OpenLogItem.logErrorEx(pe, msg, null, null);
+					} else {
+						try {
+							System.out.println("Error type not found:" + error.getClass().getName());
+							String msg = "";
+							msg = error.toString();
+							OpenLogItem.logErrorEx((Throwable) error, msg, null, null);
+						} catch (Throwable t) {
+							t.printStackTrace();
+						}
 					}
 
 				} else if (null != r.get("openLogBean")) {
