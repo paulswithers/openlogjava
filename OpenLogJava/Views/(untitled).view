@@ -1,13 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
 <note default='true' class='view' xmlns='http://www.lotus.com/dxl' version='9.0'
  replicaid='80257B21006F80BD'>
-<noteinfo noteid='116' unid='097D30353086528380257B21006F80CD' sequence='7'>
+<noteinfo noteid='116' unid='097D30353086528380257B21006F80CD' sequence='13'>
 <created><datetime>20130301T201754,69+00</datetime></created>
-<modified><datetime dst='true'>20130405T172833,15+01</datetime></modified>
-<revised><datetime dst='true'>20130405T172833,14+01</datetime></revised>
-<lastaccessed><datetime dst='true'>20130523T213846,50+01</datetime></lastaccessed>
+<modified><datetime dst='true'>20130607T084118,58+01</datetime></modified>
+<revised><datetime dst='true'>20130607T084118,57+01</datetime></revised>
+<lastaccessed><datetime dst='true'>20130607T084118,58+01</datetime></lastaccessed>
 <addedtofile><datetime>20130301T201754,70+00</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Paul Withers/O=Intec</name></updatedby>
+<wassignedby><name>CN=Paul Withers/O=Intec</name></wassignedby>
 <item name='$TITLE'><text/></item>
 <item name='$Formula' summary='true'><formula compiled='true'>
 HAAFAA4ACgABAAQAJCQkJAQABAAAAAgAZgADAA==
