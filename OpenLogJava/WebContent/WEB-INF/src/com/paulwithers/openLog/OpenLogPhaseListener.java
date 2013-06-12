@@ -33,6 +33,7 @@ import lotus.domino.Database;
 import lotus.domino.Document;
 
 import com.ibm.jscript.InterpretException;
+import com.ibm.xsp.FacesExceptionEx;
 import com.ibm.xsp.exception.EvaluationExceptionEx;
 import com.ibm.xsp.extlib.util.ExtLibUtil;
 import com.paulwithers.openLog.OpenLogErrorHolder.EventError;
@@ -97,6 +98,16 @@ public class OpenLogPhaseListener implements PhaseListener {
 					} else if ("javax.faces.FacesException".equals(error.getClass().getName())) {
 						// FacesException, so error is on event
 						FacesException fe = (FacesException) error;
+						EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
+						InterpretException ie = (InterpretException) ee.getCause();
+						String msg = "";
+						msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
+								+ " property/event:\n\n" + Integer.toString(ie.getErrorLine()) + ":\n\n"
+								+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
+						OpenLogItem.logErrorEx(ee, msg, null, null);
+					} else if ("com.ibm.xsp.FacesExceptionEx".equals(error.getClass().getName())) {
+						// FacesException, so error is on event
+						FacesExceptionEx fe = (FacesExceptionEx) error;
 						EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
 						InterpretException ie = (InterpretException) ee.getCause();
 						String msg = "";
