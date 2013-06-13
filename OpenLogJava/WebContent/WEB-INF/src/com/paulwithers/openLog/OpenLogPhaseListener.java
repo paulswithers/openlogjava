@@ -96,15 +96,18 @@ public class OpenLogPhaseListener implements PhaseListener {
 						OpenLogItem.logErrorEx(ee, msg, null, null);
 
 					} else if ("javax.faces.FacesException".equals(error.getClass().getName())) {
-						// FacesException, so error is on event
+						// FacesException, so error is on event or getValue from com.ibm.xsp.model.domino.wrapped.DominoDocument
 						FacesException fe = (FacesException) error;
-						EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
-						InterpretException ie = (InterpretException) ee.getCause();
-						String msg = "";
-						msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
-								+ " property/event:\n\n" + Integer.toString(ie.getErrorLine()) + ":\n\n"
-								+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
-						OpenLogItem.logErrorEx(ee, msg, null, null);
+						String msg = "Error on ";
+						if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(fe.getCause().getClass().getName())) {
+							EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
+							msg = msg + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
+									+ " property/event:\n\n";
+						}
+						InterpretException ie = (InterpretException) fe.getCause().getCause();
+						msg = msg + Integer.toString(ie.getErrorLine()) + ":\n\n" + ie.getLocalizedMessage() + "\n\n"
+								+ ie.getExpressionText();
+						OpenLogItem.logErrorEx(fe.getCause(), msg, null, null);
 					} else if ("com.ibm.xsp.FacesExceptionEx".equals(error.getClass().getName())) {
 						// FacesException, so error is on event
 						FacesExceptionEx fe = (FacesExceptionEx) error;
