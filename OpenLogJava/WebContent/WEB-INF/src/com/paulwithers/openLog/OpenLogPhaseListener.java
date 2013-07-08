@@ -47,6 +47,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int RENDER_RESPONSE = 6;
 
+	@SuppressWarnings("unchecked")
 	public void beforePhase(PhaseEvent event) {
 		// Add FacesContext messages for anything captured so far
 		if (RENDER_RESPONSE == event.getPhaseId().getOrdinal()) {
@@ -86,7 +87,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 					OpenLogItem.setThisAgent(false);
 
 					if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(error.getClass().getName())) {
-						// EvaluationExceptionEx, so error is on a component property
+						// EvaluationExceptionEx, so SSJS error is on a component property
 						EvaluationExceptionEx ee = (EvaluationExceptionEx) error;
 						InterpretException ie = (InterpretException) ee.getCause();
 						String msg = "";
@@ -96,7 +97,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 						OpenLogItem.logErrorEx(ee, msg, null, null);
 
 					} else if ("javax.faces.FacesException".equals(error.getClass().getName())) {
-						// FacesException, so error is on event or getValue from com.ibm.xsp.model.domino.wrapped.DominoDocument
+						// FacesException, so error is on event or method in EL
 						FacesException fe = (FacesException) error;
 						String msg = "Error on ";
 						if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(fe.getCause().getClass().getName())) {
@@ -105,8 +106,12 @@ public class OpenLogPhaseListener implements PhaseListener {
 									+ " property/event:\n\n";
 						}
 						InterpretException ie = (InterpretException) fe.getCause().getCause();
-						msg = msg + Integer.toString(ie.getErrorLine()) + ":\n\n" + ie.getLocalizedMessage() + "\n\n"
-								+ ie.getExpressionText();
+						if (null != ie) {
+							msg = msg + Integer.toString(ie.getErrorLine()) + ":\n\n" + ie.getLocalizedMessage()
+									+ "\n\n" + ie.getExpressionText();
+						} else {
+							msg = msg + fe.getCause().getLocalizedMessage();
+						}
 						OpenLogItem.logErrorEx(fe.getCause(), msg, null, null);
 					} else if ("com.ibm.xsp.FacesExceptionEx".equals(error.getClass().getName())) {
 						// FacesException, so error is on event
@@ -122,7 +127,8 @@ public class OpenLogPhaseListener implements PhaseListener {
 						// Property not found exception, so error is on a component property
 						PropertyNotFoundException pe = (PropertyNotFoundException) error;
 						String msg = "";
-						msg = "PropertyNotFounException Error, cannot locate component:\n\n" + pe.getLocalizedMessage();
+						msg = "PropertyNotFoundException Error, cannot locate component:\n\n"
+								+ pe.getLocalizedMessage();
 						OpenLogItem.logErrorEx(pe, msg, null, null);
 					} else {
 						try {

@@ -201,6 +201,7 @@ public class OpenLogItem implements Serializable {
 	// so they'll be null on a restore
 	private transient static Session _session;
 	private transient static Database _logDb;
+	private transient static String _logEmail;
 	private transient static Database _currentDatabase;
 	private transient static DateTime _startTime;
 	private transient static DateTime _eventTime;
@@ -458,6 +459,16 @@ public class OpenLogItem implements Serializable {
 			}
 		}
 		return _startTime;
+	}
+
+	/**
+	 * @return the logDbName
+	 */
+	public static String getLogEmail() {
+		if (StringUtil.isEmpty(_logEmail)) {
+			_logEmail = getXspProperty("xsp.openlog.email", "");
+		}
+		return _logEmail;
 	}
 
 	/**
@@ -1003,7 +1014,12 @@ public class OpenLogItem implements Serializable {
 			logDoc.replaceItemValue("LogSeverity", getSeverity().getName());
 			logDoc.replaceItemValue("LogEventTime", getEventTime());
 			logDoc.replaceItemValue("LogEventType", getEventType());
-			logDoc.replaceItemValue("LogMessage", getMessage());
+			// If greater than 32k, put in logDocInfo
+			if (getMessage().length() > 32000) {
+				logDoc.replaceItemValue("LogDocInfo", getMessage());
+			} else {
+				logDoc.replaceItemValue("LogMessage", getMessage());
+			}
 			logDoc.replaceItemValue("LogFromDatabase", getThisDatabase());
 			logDoc.replaceItemValue("LogFromServer", getThisServer());
 			logDoc.replaceItemValue("LogFromAgent", getThisAgent());
@@ -1036,7 +1052,11 @@ public class OpenLogItem implements Serializable {
 			// make sure Depositor-level users can add documents too
 			logDoc.appendItemValue("$PublicAccess", "1");
 
-			logDoc.save(true);
+			if (StringUtil.isEmpty(getLogEmail())) {
+				logDoc.save(true);
+			} else {
+				logDoc.send(true, getLogEmail());
+			}
 			retval = true;
 		} catch (Exception e) {
 			debugPrint(e);

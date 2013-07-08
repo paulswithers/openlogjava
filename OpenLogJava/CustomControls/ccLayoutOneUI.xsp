@@ -43,6 +43,14 @@
 								<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
+							<xe:pageTreeNode label="Error On Method" page="/ErrorOnMethod.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Error On Property" page="/ErrorOnProperty.xsp">
+								<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+
 							<xe:pageTreeNode label="Two Errors" page="/TwoErrors.xsp">
 								<xe:this.selected><![CDATA[${compositeData.selected=="two"}]]></xe:this.selected>
 							</xe:pageTreeNode>
