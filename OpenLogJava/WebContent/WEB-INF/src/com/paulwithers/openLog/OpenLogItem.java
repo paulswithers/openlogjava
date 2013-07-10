@@ -673,7 +673,7 @@ public class OpenLogItem implements Serializable {
 	private static String getIniVar(String propertyName, String defaultValue) {
 		try {
 			String newVal = getSession().getEnvironmentString(propertyName, true);
-			if (StringUtil.isEmpty(newVal)) {
+			if (StringUtil.isNotEmpty(newVal)) {
 				return newVal;
 			} else {
 				return defaultValue;
