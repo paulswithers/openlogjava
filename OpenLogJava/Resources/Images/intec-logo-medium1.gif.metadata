@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><note class="form" replicaid="80257B21006F80BD" version="9.0" xmlns="http://www.lotus.com/dxl">
-<noteinfo noteid="1aa" sequence="1" unid="E1C6BB153BC1CC8A80257B21007094C3">
+<noteinfo noteid="1aa" sequence="7" unid="E1C6BB153BC1CC8A80257B21007094C3">
 <created><datetime>20130301T202941,15+00</datetime></created>
-<modified><datetime>20130301T202941,17+00</datetime></modified>
-<revised><datetime>20130301T202941,16+00</datetime></revised>
-<lastaccessed><datetime>20130301T202941,17+00</datetime></lastaccessed>
+<modified><datetime dst="true">20130405T173241,33+01</datetime></modified>
+<revised><datetime dst="true">20130405T173241,32+01</datetime></revised>
+<lastaccessed><datetime dst="true">20130405T173241,33+01</datetime></lastaccessed>
 <addedtofile><datetime>20130301T202941,17+00</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=admin/O=Intec-PW</name></updatedby>
-<wassignedby><name>CN=admin/O=Intec-PW</name></wassignedby>
+<updatedby><name>CN=Paul Withers/O=Intec</name></updatedby>
 <item name="$TITLE"><text>intec-logo-medium1.gif</text></item>
 <item name="$Flags"><text>34CiQ</text></item>
 <item name="$FlagsExt"><text>D</text></item>

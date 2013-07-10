@@ -65,6 +65,12 @@
 				defined as private, so not accessible from code outside that class).<br/><br/>
 				If you've reached this from <b>Error On Click</b> you will see one error logged for the onclick
 				event of button1, capturing that 'com' was not found.<br/><br/>
+				If you've reached this from <b>Error On Property</b> you will see a PropertyNotFoundException Error
+				saying that filePathT could not be found. With Expression Language Exceptions, it's not possible to 
+				identify the component<br/><br/>
+				If you've reached this from <b>Error On Method</b> you will see an Error
+				saying there was an error on doSomething. With Expression Language Exceptions, it's not possible to 
+				identify the component<br/><br/>
 				If you've reached this from <b>Two Errors</b> you will see one error logged for the rendered
 				property of Test1, capturing that 'com' was not found. The error from the value property of
 				Test1 is not captured though. This shows why, you should always use try/catch blocks,

@@ -47,6 +47,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int RENDER_RESPONSE = 6;
 
+	@SuppressWarnings("unchecked")
 	public void beforePhase(PhaseEvent event) {
 		// Add FacesContext messages for anything captured so far
 		if (RENDER_RESPONSE == event.getPhaseId().getOrdinal()) {
@@ -79,61 +80,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 			if (RENDER_RESPONSE == event.getPhaseId().getOrdinal()) {
 				Map<String, Object> r = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
 				if (null != r.get("error")) {
-					// requestScope.error is not null, we're on the custom error page.
-					Object error = r.get("error");
-
-					// Set the agent (page we're on) to the *previous* page
-					OpenLogItem.setThisAgent(false);
-
-					if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(error.getClass().getName())) {
-						// EvaluationExceptionEx, so error is on a component property
-						EvaluationExceptionEx ee = (EvaluationExceptionEx) error;
-						InterpretException ie = (InterpretException) ee.getCause();
-						String msg = "";
-						msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
-								+ " property/event, line " + Integer.toString(ie.getErrorLine()) + ":\n\n"
-								+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
-						OpenLogItem.logErrorEx(ee, msg, null, null);
-
-					} else if ("javax.faces.FacesException".equals(error.getClass().getName())) {
-						// FacesException, so error is on event or getValue from com.ibm.xsp.model.domino.wrapped.DominoDocument
-						FacesException fe = (FacesException) error;
-						String msg = "Error on ";
-						if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(fe.getCause().getClass().getName())) {
-							EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
-							msg = msg + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
-									+ " property/event:\n\n";
-						}
-						InterpretException ie = (InterpretException) fe.getCause().getCause();
-						msg = msg + Integer.toString(ie.getErrorLine()) + ":\n\n" + ie.getLocalizedMessage() + "\n\n"
-								+ ie.getExpressionText();
-						OpenLogItem.logErrorEx(fe.getCause(), msg, null, null);
-					} else if ("com.ibm.xsp.FacesExceptionEx".equals(error.getClass().getName())) {
-						// FacesException, so error is on event
-						FacesExceptionEx fe = (FacesExceptionEx) error;
-						EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
-						InterpretException ie = (InterpretException) ee.getCause();
-						String msg = "";
-						msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId()
-								+ " property/event:\n\n" + Integer.toString(ie.getErrorLine()) + ":\n\n"
-								+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
-						OpenLogItem.logErrorEx(ee, msg, null, null);
-					} else if ("javax.faces.el.PropertyNotFoundException".equals(error.getClass().getName())) {
-						// Property not found exception, so error is on a component property
-						PropertyNotFoundException pe = (PropertyNotFoundException) error;
-						String msg = "";
-						msg = "PropertyNotFounException Error, cannot locate component:\n\n" + pe.getLocalizedMessage();
-						OpenLogItem.logErrorEx(pe, msg, null, null);
-					} else {
-						try {
-							System.out.println("Error type not found:" + error.getClass().getName());
-							String msg = "";
-							msg = error.toString();
-							OpenLogItem.logErrorEx((Throwable) error, msg, null, null);
-						} catch (Throwable t) {
-							t.printStackTrace();
-						}
-					}
+					processUncaughtException(r);
 
 				} else if (null != r.get("openLogBean")) {
 					// requestScope.openLogBean is not null, the developer has called openLogBean.addError(e,this)
@@ -202,6 +149,91 @@ public class OpenLogPhaseListener implements PhaseListener {
 		} catch (Throwable e) {
 			// We've hit an error in our code here, log the error
 			OpenLogItem.logError(e);
+		}
+	}
+
+	/**
+	 * This is getting VERY complex because of the variety of exceptions and tracking up the stack trace to find the
+	 * right class to get as much info as possible. Extracted into a separate method to make it more readable.
+	 * 
+	 * @param r
+	 *            requestScope map
+	 */
+	private void processUncaughtException(Map<String, Object> r) {
+		// requestScope.error is not null, we're on the custom error page.
+		Object error = r.get("error");
+
+		// Set the agent (page we're on) to the *previous* page
+		OpenLogItem.setThisAgent(false);
+
+		if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(error.getClass().getName())) {
+			// EvaluationExceptionEx, so SSJS error is on a component property. 
+			// Hit by ErrorOnLoad.xsp
+			EvaluationExceptionEx ee = (EvaluationExceptionEx) error;
+			InterpretException ie = (InterpretException) ee.getCause();
+			String msg = "";
+			msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId() + " property/event, line "
+					+ Integer.toString(ie.getErrorLine()) + ":\n\n" + ie.getLocalizedMessage() + "\n\n"
+					+ ie.getExpressionText();
+			OpenLogItem.logErrorEx(ee, msg, null, null);
+
+		} else if ("javax.faces.FacesException".equals(error.getClass().getName())) {
+			// FacesException, so error is on event or method in EL
+			FacesException fe = (FacesException) error;
+			InterpretException ie = null;
+			EvaluationExceptionEx ee = null;
+			String msg = "Error on ";
+			// javax.faces.el.MethodNotFoundException hit by ErrorOnMethod.xsp
+			if (!"javax.faces.el.MethodNotFoundException".equals(fe.getCause().getClass().getName())) {
+				if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(fe.getCause().getClass().getName())) {
+					// Hit by ErrorOnClick.xsp
+					ee = (EvaluationExceptionEx) fe.getCause();
+				} else if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(fe.getCause().getCause().getClass()
+						.getName())) {
+					// Hit by using e.g. currentDocument.isNewDoc()
+					// i.e. using a Variable that relates to a valid Java object but a method that doesn't exist
+					ee = (EvaluationExceptionEx) fe.getCause().getCause();
+				}
+				if (null != ee) {
+					msg = msg + ee.getErrorComponentId() + " " + ee.getErrorPropertyId() + " property/event:\n\n";
+					if ("com.ibm.jscript.InterpretException".equals(ee.getCause().getClass().getName())) {
+						ie = (InterpretException) ee.getCause();
+					}
+				}
+			}
+			if (null != ie) {
+				msg = msg + Integer.toString(ie.getErrorLine()) + ":\n\n" + ie.getLocalizedMessage() + "\n\n"
+						+ ie.getExpressionText();
+			} else {
+				msg = msg + fe.getCause().getLocalizedMessage();
+			}
+			OpenLogItem.logErrorEx(fe.getCause(), msg, null, null);
+		} else if ("com.ibm.xsp.FacesExceptionEx".equals(error.getClass().getName())) {
+			// FacesException, so error is on event - doesn't get hit in examples. Can this still get hit??
+			FacesExceptionEx fe = (FacesExceptionEx) error;
+			EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
+			InterpretException ie = (InterpretException) ee.getCause();
+			String msg = "";
+			msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId() + " property/event:\n\n"
+					+ Integer.toString(ie.getErrorLine()) + ":\n\n" + ie.getLocalizedMessage() + "\n\n"
+					+ ie.getExpressionText();
+			OpenLogItem.logErrorEx(ee, msg, null, null);
+		} else if ("javax.faces.el.PropertyNotFoundException".equals(error.getClass().getName())) {
+			// Hit by ErrorOnProperty.xsp
+			// Property not found exception, so error is on a component property
+			PropertyNotFoundException pe = (PropertyNotFoundException) error;
+			String msg = "";
+			msg = "PropertyNotFoundException Error, cannot locate component:\n\n" + pe.getLocalizedMessage();
+			OpenLogItem.logErrorEx(pe, msg, null, null);
+		} else {
+			try {
+				System.out.println("Error type not found:" + error.getClass().getName());
+				String msg = "";
+				msg = error.toString();
+				OpenLogItem.logErrorEx((Throwable) error, msg, null, null);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
 		}
 	}
 

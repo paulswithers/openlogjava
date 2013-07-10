@@ -51,22 +51,22 @@
 
 						Three different configurable settings can be set in the xsp.properties of the
 						database or server or in the server's notes.ini. They are retrieved in that order.
-						<ul><li>Set the OpenLog path by using xsp.openlog.filepath, defaulting to "OpenLog.nsf"</li>
-						<li>Set debug level if errors occur in OpenLogItem class using xsp.openlog.debugLevel. The 
-						default is 1, to log just the error. 2 will log the full stack trace.
+						<ul><li>Set the OpenLog path by using <b>xsp.openlog.filepath</b>, defaulting to "OpenLog.nsf"</li>
+						<li>Set debug level if errors occur in OpenLogItem class using <b>xsp.openlog.debugLevel</b>. The 
+						default is 2, to log just full details. 1 will log just the message, 0 will log nothing.
 						<li>By default SSJS errors will now also be added to a FacesMessage, so displayed if a partial 
 						refresh occurs. The error also includes the control id the error relates to, if an id has
-						been defined (best practice). To suppress this set xsp.openlog.displayError=false</li>
+						been defined (best practice). To suppress this set <b>xsp.openlog.displayError=false</b></li>
 						<li>xsp.openlog.genericErrorMessage can be used to define a generic error message to 
 						be displayed to the users e.g. "Please contact IT, an error has occurred". If 
-						xsp.openlog.genericErrorMessage returns an empty string, the default, then the full error 
-						is returned</li></ul>
+						<b>xsp.openlog.genericErrorMessage</b> returns an empty string, the default, then the full error 
+						is returned</li>
+						<li>xsp.openlog.email can be used to send logs to an OpenLog database that is set up as a 
+						mail-in database. The log document is created in the server's mail.box and saved with the 
+						email address as the recipient.</li></ul>
 						<br/><br/>
 
-						Set the default debug level by using xsp.openlog.debugLevel in the same places. This defines
-						what will be logged to the server console if an OpenLog document cannot be created -
-						nothing (0), the error message (1), or the error message and full stack trace (2).
-						See this database's xsp.properties for implementation.
+						See this database's xsp.properties for samples.
 
 						See <b>Using from Java</b> for full documentation on accessing it in Java code.<br/><br/>
 

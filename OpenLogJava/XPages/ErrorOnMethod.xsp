@@ -15,24 +15,18 @@
 		See the License for the specific language governing permissions and limitations under the License
 	-->
 
-	<xc:ccLayoutOneUI selected="click">
+
+	<xc:ccLayoutOneUI selected="load">
 		<xp:this.facets>
 			<xp:div xp:key="facet_1" style="text-align:center" id="panel1">
 				<!-- Images -->
 				<xp:image url="intec-logo-medium1.gif" id="image1"
 					style="float:right" alt="Intec Systems Ltd">
 				</xp:image>
-				<!-- Title -->
-				
-				<xp:text escape="false">
-						<xp:this.value><![CDATA[This page gives examples of an uncaught error on an event.
-						Click the button and it will redirect to the Errors page.]]>
-						</xp:this.value>
-					</xp:text>
 				<xp:button value="This fails" id="button1">
 					<xp:eventHandler event="onclick" submit="true"
 						refreshMode="complete">
-						<xp:this.action><![CDATA[#{javascript:com.paulwithers.openLog.OpenLogItem.logEvent(null,com.paulwithers.util.OpenLogItem.getXspProperty("xsp.openlog.filepath",""),null,null);}]]></xp:this.action>
+						<xp:this.action><![CDATA[#{invalidBean.doSomething}]]></xp:this.action>
 					</xp:eventHandler>
 				</xp:button>
 			</xp:div>

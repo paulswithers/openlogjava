@@ -14,48 +14,56 @@
 	-->
 
 	<xp:panel id="applicationLayout1">
-			<xp:panel id="navigator1" style="float:left">
-				<xp:label value="Documentation"></xp:label>
-				<xp:br></xp:br>
-				<xp:link text="Home" value="/Home.xsp">
-				</xp:link>
-				<xp:br></xp:br>
+		<xp:panel id="navigator1" style="float:left">
+			<xp:label value="Documentation"></xp:label>
+			<xp:br></xp:br>
+			<xp:link text="Home" value="/Home.xsp">
+			</xp:link>
+			<xp:br></xp:br>
 
-				<xp:link text="Using from SSJS" value="/UsingFromSSJS.xsp">
-				</xp:link>
-				<xp:br></xp:br>
+			<xp:link text="Using from SSJS" value="/UsingFromSSJS.xsp">
+			</xp:link>
+			<xp:br></xp:br>
 
-				<xp:link text="Using from Java" value="/UsingFromJava.xsp">
-				</xp:link>
-				<xp:br></xp:br>
-				
-				<xp:label value="Examples"></xp:label>
-				<xp:br></xp:br>
-				
-				<xp:link text="Error On Load" value="/ErrorOnLoad.xsp">
-				</xp:link>
-				<xp:br></xp:br>
-				
-				<xp:link text="Error On Click" value="/ErrorOnClick.xsp">
-				</xp:link>
-				<xp:br></xp:br>
+			<xp:link text="Using from Java" value="/UsingFromJava.xsp">
+			</xp:link>
+			<xp:br></xp:br>
 
-				<xp:link text="Two Errors" value="/TwoErrors.xsp">
-				</xp:link>
-				<xp:br></xp:br>
+			<xp:label value="Examples"></xp:label>
+			<xp:br></xp:br>
 
-				<xp:link text="Caught Error" value="/ThrownError.xsp">
-				</xp:link>
-				<xp:br></xp:br>
+			<xp:link text="Error On Load" value="/ErrorOnLoad.xsp">
+			</xp:link>
+			<xp:br></xp:br>
 
-				<xp:link text="Caught Error EL" value="/ThrownErrorEL.xsp">
-				</xp:link>
-				<xp:br></xp:br>
+			<xp:link text="Error On Click" value="/ErrorOnClick.xsp">
+			</xp:link>
+			<xp:br></xp:br>
 
-				<xp:link text="Java Error" value="/JavaSample.xsp">
-				</xp:link>
-				<xp:br></xp:br>
-			</xp:panel>
+			<xp:link text="Error On Method" value="/ErrorOnMethod.xsp">
+			</xp:link>
+			<xp:br></xp:br>
+
+			<xp:link text="Error On Property" value="/ErrorOnProperty.xsp">
+			</xp:link>
+			<xp:br></xp:br>
+
+			<xp:link text="Two Errors" value="/TwoErrors.xsp">
+			</xp:link>
+			<xp:br></xp:br>
+
+			<xp:link text="Caught Error" value="/ThrownError.xsp">
+			</xp:link>
+			<xp:br></xp:br>
+
+			<xp:link text="Caught Error with EL Object" value="/ThrownErrorEL.xsp">
+			</xp:link>
+			<xp:br></xp:br>
+
+			<xp:link text="Java Error" value="/JavaSample.xsp">
+			</xp:link>
+			<xp:br></xp:br>
+		</xp:panel>
 		<xp:callback facetName="facet_1" id="callback1"></xp:callback>
 	</xp:panel>
 </xp:view>
