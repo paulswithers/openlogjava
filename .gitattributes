@@ -1,0 +1,29 @@
+
+# Dora Start
+
+*.aa filter=dxlmetadata text eol=lf
+*.column filter=dxlmetadata text eol=lf
+*.dcr filter=dxlmetadata text eol=lf
+*.fa filter=dxlmetadata text eol=lf
+*.field filter=dxlmetadata text eol=lf
+*.folder filter=dxlmetadata text eol=lf
+*.form filter=dxlmetadata text eol=lf
+*.frameset filter=dxlmetadata text eol=lf
+*.ija filter=dxlmetadata text eol=lf
+*.ja filter=dxlmetadata text eol=lf
+*.javalib filter=dxlmetadata text eol=lf
+*.lsa filter=dxlmetadata text eol=lf
+*.lsdb filter=dxlmetadata text eol=lf
+*.metadata filter=dxlmetadata text eol=lf
+*.navigator filter=dxlmetadata text eol=lf
+*.outline filter=dxlmetadata text eol=lf
+*.page filter=dxlmetadata text eol=lf
+*.subform filter=dxlmetadata text eol=lf
+*.view filter=dxlmetadata text eol=lf
+AboutDocument filter=dxlmetadata text eol=lf
+database.properties filter=dxlmetadata text eol=lf
+IconNote filter=dxlmetadata text eol=lf
+Shared?Actions filter=dxlmetadata text eol=lf
+UsingDocument filter=dxlmetadata text eol=lf
+
+# Dora Finish
