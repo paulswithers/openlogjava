@@ -72,16 +72,17 @@
 					</xp:this.validators>
 				</xp:inputText>
 				<xp:button value="Throw Event Error" id="button1">
-					<xp:eventHandler event="onclick" submit="true" refreshMode="complete"
-						immediate="true">
+					<xp:eventHandler event="onclick" submit="true"
+						refreshMode="complete" immediate="true">
 						<xp:this.action><![CDATA[#{javascript:try {
 	// button event
 	openLogBean.addEvent("Button click event",this.getParent());
 	com.paulwithers.openLog.OpenLogItem.getXspProperty("xsp.openlog.filepath","");
 } catch(e) {
-	openLogBean.addError(e,this.getParent());
-	return true;
+	throw(e);
 }}]]></xp:this.action>
+						<xp:this.onError><![CDATA[alert("Error");]]></xp:this.onError>
+						<xp:this.onComplete><![CDATA[alert("Complete");]]></xp:this.onComplete>
 					</xp:eventHandler>
 				</xp:button>
 				<xp:messages id="messages1"></xp:messages>

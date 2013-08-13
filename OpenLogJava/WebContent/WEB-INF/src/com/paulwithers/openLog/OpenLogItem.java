@@ -1060,6 +1060,9 @@ public class OpenLogItem implements Serializable {
 
 			if (StringUtil.isNotEmpty(getLogEmail())) {
 				logDoc.replaceItemValue("Recipients", getLogEmail());
+				logDoc.replaceItemValue("SendTo", getLogEmail());
+				logDoc.replaceItemValue("From", getUserName());
+				logDoc.replaceItemValue("Principal", getUserName());
 			}
 			logDoc.save(true);
 			retval = true;
