@@ -1,16 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
-<note default='true' class='icon' xmlns='http://www.lotus.com/dxl' version='9.0'
- replicaid='80257B21006F80BD'>
-<noteinfo noteid='11a' unid='E728BA1B457C3F8080257B21006F80CE' sequence='51'>
-<created><datetime>20130301T201754,70+00</datetime></created>
-<modified><datetime dst='true'>20130604T153009,07+01</datetime></modified>
-<revised><datetime dst='true'>20130604T153009,06+01</datetime></revised>
-<lastaccessed><datetime dst='true'>20130604T153009,07+01</datetime></lastaccessed>
-<addedtofile><datetime>20130301T201754,72+00</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Paul Withers/O=Intec</name></updatedby>
-<wassignedby><name>CN=Paul Withers/O=Intec</name></wassignedby>
-<item name='IconBitmap' summary='true'>
-<rawitemdata type='6'>
+<?xml version="1.0"?>
+<note xmlns="http://www.lotus.com/dxl" default="true" class="icon">
+  <item name="IconBitmap" summary="true">
+    <rawitemdata type="6">
 AiAgAQAA///////wD///4Af//8AD//4AAH/8AAA/+AAAH/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAA
 D+AAAAfAAAADgAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAcAAAAPwAAAP8AAAD/AAAA/wAAAP
 +AAAH/wAAD//8A////gf//////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////wAAAAAAAAAAAAAA
@@ -23,9 +14,27 @@ fdd3d3fRH/HXd3d3fdd3d33Xd3d3fR/x13d3d33Xd3d913d3d30f8dd3d3fR13d3fR13d3d9H/Ed
 d30fAAAAAPHXd33Xd3d913d9HwAAAADx13d913d3fdd3fR8AAAAA8R3d0dd3d30d3dEfAAAAAA8R
 EREdd3fRERER8AAAAAAA////Ed3dEf///wAAAAAAAAAAAPERER8AAAAAAAAAAAAAAAAP///wAAAA
 AAAAUEECICABAAD/////+A4DgA==
-</rawitemdata></item>
-<item name='$Daos'><text>0</text></item>
-<item name='$TITLE'><text>OpenLog Java / SSJS</text></item>
-<item name='$Flags'><text>J</text></item>
-<item name='$FlagsNoRefresh'><text>rv</text></item></note>
-
+</rawitemdata>
+  </item>
+  <item name="$Daos">
+    <text>0</text>
+  </item>
+  <item name="$TITLE">
+    <text>OpenLog Java / SSJS</text>
+  </item>
+  <item name="$DefaultClientXPage">
+    <text>Home.xsp</text>
+  </item>
+  <item name="$Flags">
+    <text>J?!</text>
+  </item>
+  <item name="$LaunchXPageRunOnServer">
+    <text>0</text>
+  </item>
+  <item name="$FlagsNoRefresh">
+    <text>rv</text>
+  </item>
+  <item name="$DefaultXPage">
+    <text>Home.xsp</text>
+  </item>
+</note>
