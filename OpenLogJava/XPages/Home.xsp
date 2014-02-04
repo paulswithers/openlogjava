@@ -61,9 +61,14 @@
 						be displayed to the users e.g. "Please contact IT, an error has occurred". If 
 						<b>xsp.openlog.genericErrorMessage</b> returns an empty string, the default, then the full error 
 						is returned</li>
-						<li>xsp.openlog.email can be used to send logs to an OpenLog database that is set up as a 
+						<li><b>xsp.openlog.email</b> can be used to send logs to an OpenLog database that is set up as a 
 						mail-in database. The log document is created in the server's mail.box and saved with the 
-						email address as the recipient.</li></ul>
+						email address as the recipient.</li>
+						<li><b>xsp.openlog.suppressEventStack</b> can be used to suppress stack traces in Event logs.
+						Full stack traces are still recorded for errors. <b>NOTE</b>The stack trace is the only method 
+						I know of to identify which XPages lifecycle phase an Event / Error is logged for, e.g. you may 
+						get a message logged for Restore View phase because a variable is not available, but the page displays 
+						fine because the relevant variable is available in Render Response.</li></ul>
 						<br/><br/>
 
 						See this database's xsp.properties for samples.

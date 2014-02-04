@@ -43,10 +43,20 @@ public class OpenLogErrorHolder implements Serializable {
 
 	}
 
+	/**
+	 * LinkedHashSet (array of EventError objects in the order they were inserted)
+	 * 
+	 * @return LinkedHashSet Errors or Events as a list
+	 */
 	public LinkedHashSet<EventError> getErrors() {
 		return errors;
 	}
 
+	/**
+	 * Loads a list of EventError objects, see {@link #getErrors()}
+	 * 
+	 * @return LinkedHashSet
+	 */
 	public LinkedHashSet<EventError> getEvents() {
 		return events;
 	}

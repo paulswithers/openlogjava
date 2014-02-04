@@ -19,22 +19,22 @@ AAAAUEECICABAAD/////+A4DgA==
   <item name="$Daos">
     <text>0</text>
   </item>
-  <item name="$TITLE">
-    <text>OpenLog Java / SSJS</text>
+  <item name="$LaunchXPageRunOnServer">
+    <text>0</text>
   </item>
   <item name="$DefaultClientXPage">
     <text>Home.xsp</text>
   </item>
+  <item name="$DefaultXPage">
+    <text>Home.xsp</text>
+  </item>
+  <item name="$TITLE">
+    <text>OpenLog Java / SSJS</text>
+  </item>
   <item name="$Flags">
     <text>J?!</text>
   </item>
-  <item name="$LaunchXPageRunOnServer">
-    <text>0</text>
-  </item>
   <item name="$FlagsNoRefresh">
     <text>rv</text>
-  </item>
-  <item name="$DefaultXPage">
-    <text>Home.xsp</text>
   </item>
 </note>

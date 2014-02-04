@@ -201,6 +201,7 @@ public class OpenLogItem implements Serializable {
 	// so they'll be null on a restore
 	private transient static Session _session;
 	private transient static Database _logDb;
+	private transient static Boolean _suppressEventStack;
 	private transient static String _logEmail;
 	private transient static Database _currentDatabase;
 	private transient static DateTime _startTime;
@@ -482,6 +483,32 @@ public class OpenLogItem implements Serializable {
 			}
 		}
 		return _logDbName;
+	}
+
+	/**
+	 * Gets xsp.property of whether to suppress stack trace. Should be xsp.openlog.suppressEventStack=true to suppress.
+	 * Anything else will return false
+	 * 
+	 * @return whether or not stack should be suppressed for events
+	 */
+	public static Boolean getSuppressEventStack() {
+		String dummyVar = getXspProperty("xsp.openlog.suppressEventStack", "false");
+		if (StringUtil.isEmpty(dummyVar)) {
+			setSuppressEventStack(true);
+		} else if ("FALSE".equals(dummyVar.toUpperCase())) {
+			setSuppressEventStack(false);
+		} else {
+			setSuppressEventStack(true);
+		}
+		return _suppressEventStack;
+	}
+
+	/**
+	 * @param suppressEventStack
+	 *            Boolean whether or not to suppress stack trace for Events
+	 */
+	public static void setSuppressEventStack(final Boolean suppressEventStack) {
+		_suppressEventStack = suppressEventStack;
 	}
 
 	private static String getThisDatabasePath() {
@@ -997,27 +1024,34 @@ public class OpenLogItem implements Serializable {
 			logDoc.appendItemValue("Form", _logFormName);
 
 			Throwable ee = getBase();
-			StackTraceElement ste = ee.getStackTrace()[0];
 			String errMsg = "";
-			if (ee instanceof NotesException) {
-				logDoc.replaceItemValue("LogErrorNumber", ((NotesException) ee).id);
-				errMsg = ((NotesException) ee).text;
-			} else if ("Interpret exception".equals(ee.getMessage())
-					&& ee instanceof com.ibm.jscript.JavaScriptException) {
-				com.ibm.jscript.InterpretException ie = (com.ibm.jscript.InterpretException) ee;
-				errMsg = "Expression Language Interpret Exception " + ie.getExpressionText();
-			} else {
-				errMsg = ee.getMessage();
+			if (null != ee) {
+				StackTraceElement ste = ee.getStackTrace()[0];
+				if (ee instanceof NotesException) {
+					logDoc.replaceItemValue("LogErrorNumber", ((NotesException) ee).id);
+					errMsg = ((NotesException) ee).text;
+				} else if ("Interpret exception".equals(ee.getMessage())
+						&& ee instanceof com.ibm.jscript.JavaScriptException) {
+					com.ibm.jscript.InterpretException ie = (com.ibm.jscript.InterpretException) ee;
+					errMsg = "Expression Language Interpret Exception " + ie.getExpressionText();
+				} else {
+					errMsg = ee.getMessage();
+				}
+
+				if (TYPE_EVENT.equals(getEventType())) {
+					if (!getSuppressEventStack()) {
+						logDoc.replaceItemValue("LogStackTrace", getStackTrace(ee));
+					}
+				}
+				logDoc.replaceItemValue("LogErrorLine", ste.getLineNumber());
+				logDoc.replaceItemValue("LogFromMethod", ste.getClass() + "." + ste.getMethodName());
 			}
 
-			if (null == errMsg) {
+			if ("".equals(errMsg)) {
 				errMsg = getMessage();
 			}
 
 			logDoc.replaceItemValue("LogErrorMessage", errMsg);
-			logDoc.replaceItemValue("LogStackTrace", getStackTrace(ee));
-			logDoc.replaceItemValue("LogErrorLine", ste.getLineNumber());
-			logDoc.replaceItemValue("LogSeverity", getSeverity().getName());
 			logDoc.replaceItemValue("LogEventTime", getEventTime());
 			logDoc.replaceItemValue("LogEventType", getEventType());
 			// If greater than 32k, put in logDocInfo
@@ -1027,10 +1061,10 @@ public class OpenLogItem implements Serializable {
 			} else {
 				logDoc.replaceItemValue("LogMessage", getMessage());
 			}
+			logDoc.replaceItemValue("LogSeverity", getSeverity().getName());
 			logDoc.replaceItemValue("LogFromDatabase", getThisDatabase());
 			logDoc.replaceItemValue("LogFromServer", getThisServer());
 			logDoc.replaceItemValue("LogFromAgent", getThisAgent());
-			logDoc.replaceItemValue("LogFromMethod", ste.getClass() + "." + ste.getMethodName());
 			logDoc.replaceItemValue("LogAgentLanguage", "Java");
 			logDoc.replaceItemValue("LogUserName", getUserName());
 			logDoc.replaceItemValue("LogEffectiveName", getEffName());
