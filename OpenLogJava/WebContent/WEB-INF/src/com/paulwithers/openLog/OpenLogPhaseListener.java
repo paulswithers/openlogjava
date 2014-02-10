@@ -18,6 +18,7 @@ package com.paulwithers.openLog;
 
  */
 
+import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.logging.Level;
@@ -167,12 +168,12 @@ public class OpenLogPhaseListener implements PhaseListener {
 		// Set the agent (page we're on) to the *previous* page
 		OpenLogItem.setThisAgent(false);
 
+		String msg = "";
 		if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(error.getClass().getName())) {
 			// EvaluationExceptionEx, so SSJS error is on a component property. 
 			// Hit by ErrorOnLoad.xsp
 			EvaluationExceptionEx ee = (EvaluationExceptionEx) error;
 			InterpretException ie = (InterpretException) ee.getCause();
-			String msg = "";
 			msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId() + " property/event, line "
 					+ Integer.toString(ie.getErrorLine()) + ":\n\n" + ie.getLocalizedMessage() + "\n\n"
 					+ ie.getExpressionText();
@@ -183,7 +184,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 			FacesException fe = (FacesException) error;
 			InterpretException ie = null;
 			EvaluationExceptionEx ee = null;
-			String msg = "Error on ";
+			msg = "Error on ";
 			try {
 				// javax.faces.el.MethodNotFoundException hit by ErrorOnMethod.xsp
 				if (!"javax.faces.el.MethodNotFoundException".equals(fe.getCause().getClass().getName())) {
@@ -220,13 +221,17 @@ public class OpenLogPhaseListener implements PhaseListener {
 		} else if ("com.ibm.xsp.FacesExceptionEx".equals(error.getClass().getName())) {
 			// FacesException, so error is on event - doesn't get hit in examples. Can this still get hit??
 			FacesExceptionEx fe = (FacesExceptionEx) error;
-			String msg = "";
 			try {
 				if ("lotus.domino.NotesException".equals(fe.getCause().getClass().getName())) {
 					// sometimes the cause is a NotesException
 					NotesException ne = (NotesException) fe.getCause();
 
 					msg = msg + "NotesException - " + Integer.toString(ne.id) + " " + ne.text;
+				} else if ("java.io.IOException".equals(error.getClass().getName())) {
+					IOException e = (IOException) error;
+
+					msg = "Java IO:" + error.toString();
+					OpenLogItem.logErrorEx(e.getCause(), msg, null, null);
 				} else {
 					EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
 					InterpretException ie = (InterpretException) ee.getCause();
@@ -246,13 +251,11 @@ public class OpenLogPhaseListener implements PhaseListener {
 			// Hit by ErrorOnProperty.xsp
 			// Property not found exception, so error is on a component property
 			PropertyNotFoundException pe = (PropertyNotFoundException) error;
-			String msg = "";
 			msg = "PropertyNotFoundException Error, cannot locate component:\n\n" + pe.getLocalizedMessage();
 			OpenLogItem.logErrorEx(pe, msg, null, null);
 		} else {
 			try {
 				System.out.println("Error type not found:" + error.getClass().getName());
-				String msg = "";
 				msg = error.toString();
 				OpenLogItem.logErrorEx((Throwable) error, msg, null, null);
 			} catch (Throwable t) {
