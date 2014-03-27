@@ -41,7 +41,7 @@
 	var count = view1.getEntryCount();
 	print (count);
 } catch(e) {
-	openLogBean.addError(e,this.getParent());
+	openLogBean.addError(e,this);
 	return "BLAH";
 }}]]></xp:this.action>
 					</xp:eventHandler></xp:button>

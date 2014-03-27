@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<note xmlns="http://www.lotus.com/dxl" class="form">
+<note xmlns="http://www.lotus.com/dxl" class="form" maintenanceversion="1.0">
   <item name="$Flags">
     <text>gC~4K</text>
   </item>

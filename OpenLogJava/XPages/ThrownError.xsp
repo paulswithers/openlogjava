@@ -76,7 +76,7 @@
 						refreshMode="complete" immediate="true">
 						<xp:this.action><![CDATA[#{javascript:try {
 	// button event
-	openLogBean.addEvent("Button click event",this.getParent());
+	openLogBean.addEvent("Button click event",this);
 	com.paulwithers.openLog.OpenLogItem.getXspProperty("xsp.openlog.filepath","");
 } catch(e) {
 	throw(e);
