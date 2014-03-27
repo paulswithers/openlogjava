@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.ibm.commons.Extension">
+      <service
+            class="com.paulwithers.openLog.library.StarterLibrary"
+            type="com.ibm.xsp.Library">
+      </service>
+   </extension>
+<extension point="com.ibm.commons.Extension">
+         <service
+            type="com.ibm.xsp.resource.DojoModulePathResource"
+            class="com.paulwithers.openLog.resources.ModulePath" />
+   </extension>
+   <extension point="com.ibm.commons.Extension">
+      <service type="com.ibm.xsp.GlobalResourceProvider" class="com.paulwithers.openLog.resources.ResourceProvider" />
+   </extension>
+    <extension point="com.ibm.commons.Extension">
+         <service type="com.ibm.xsp.RequestParameters" class="com.paulwithers.openLog.resources.RequestCustomizerFactory" />
+   </extension>
+    <extension point="com.ibm.commons.Extension">
+         <service type="com.ibm.xsp.library.Contributor" class="com.paulwithers.openLog.library.StarterContributor" />
+   </extension>
+ <!--   <extension
+          point="com.ibm.commons.Extension">
+       <service
+             type="com.ibm.xsp.adapter.servletFactory" class="org.openntf.xsp.starter.servlet.ServletFactory">
+       </service>
+    </extension>
+    -->
+</plugin>

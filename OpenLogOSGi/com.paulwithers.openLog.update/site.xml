@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.paulwithers.openLog.feature_4.0.1.201403201744.jar" id="com.paulwithers.openLog.feature" version="4.0.1.201403201744">
+      <category name="OpenLog"/>
+   </feature>
+   <category-def name="OpenLog" label="OpenLog"/>
+</site>
