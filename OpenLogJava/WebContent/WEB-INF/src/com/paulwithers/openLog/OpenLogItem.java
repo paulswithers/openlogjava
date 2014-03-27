@@ -203,6 +203,7 @@ public class OpenLogItem implements Serializable {
 	private transient static Database _logDb;
 	private transient static Boolean _suppressEventStack;
 	private transient static String _logEmail;
+	private transient static String _logExpireDate;
 	private transient static Database _currentDatabase;
 	private transient static DateTime _startTime;
 	private transient static DateTime _eventTime;
@@ -246,7 +247,9 @@ public class OpenLogItem implements Serializable {
 		if (_thisServer == null) {
 			try {
 				_thisServer = getSession().getServerName();
-				if (_thisServer == null) _thisServer = "";
+				if (_thisServer == null) {
+					_thisServer = "";
+				}
 			} catch (Exception e) {
 				debugPrint(e);
 			}
@@ -463,7 +466,17 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 * @return the logDbName
+	 * @return the expire date
+	 */
+	public static String getLogExpireDate() {
+		if (StringUtil.isEmpty(_logExpireDate)) {
+			_logExpireDate = getXspProperty("xsp.openlog.expireDate", "");
+		}
+		return _logExpireDate;
+	}
+
+	/**
+	 * @return the log email address
 	 */
 	public static String getLogEmail() {
 		if (StringUtil.isEmpty(_logEmail)) {
@@ -619,7 +632,9 @@ public class OpenLogItem implements Serializable {
 	 * @return the message
 	 */
 	public static String getMessage() {
-		if (_message.length() > 0) return _message;
+		if (_message.length() > 0) {
+			return _message;
+		}
 		return getBase().getMessage();
 	}
 
@@ -950,10 +965,11 @@ public class OpenLogItem implements Serializable {
 			StringTokenizer st = new StringTokenizer(sw.toString(), "\n");
 			int count = 0;
 			while (st.hasMoreTokens()) {
-				if (skip <= count++)
+				if (skip <= count++) {
 					v.addElement(st.nextToken().trim());
-				else
+				} else {
 					st.nextToken();
+				}
 			}
 
 		} catch (Exception e) {
@@ -1100,6 +1116,20 @@ public class OpenLogItem implements Serializable {
 				logDoc.replaceItemValue("From", getUserName());
 				logDoc.replaceItemValue("Principal", getUserName());
 			}
+
+			// Set expiry date, if defined
+			if (!StringUtil.isEmpty(getLogExpireDate())) {
+				try {
+					Integer expiryPeriod = new Integer(getLogExpireDate());
+					_startTime.adjustDay(expiryPeriod);
+					logDoc.replaceItemValue("ExpireDate", _startTime);
+				} catch (Throwable t) {
+					logDoc
+							.replaceItemValue(
+									"ArchiveFlag",
+									"WARNING: Xsp Properties in the application has a non-numeric value for xsp.openlog.expireDate, so cannot be set to auto-expire");
+				}
+			}
 			logDoc.save(true);
 			retval = true;
 		} catch (Throwable t) {
@@ -1108,25 +1138,33 @@ public class OpenLogItem implements Serializable {
 		} finally {
 			// recycle all the logDoc objects when we're done with them
 			try {
-				if (rtitem != null) rtitem.recycle();
+				if (rtitem != null) {
+					rtitem.recycle();
+				}
 			} catch (Exception e2) {
 				// NTF why the hell does .recycle() throw an Exception?
 			}
 			rtitem = null;
 			try {
-				if (logDoc != null) logDoc.recycle();
+				if (logDoc != null) {
+					logDoc.recycle();
+				}
 			} catch (Exception e2) {
 				// see above
 			}
 			logDoc = null;
 			try {
-				if (_startTime != null) _startTime.recycle();
+				if (_startTime != null) {
+					_startTime.recycle();
+				}
 			} catch (Exception e2) {
 				// see above
 			}
 			_startTime = null;
 			try {
-				if (_eventTime != null) _eventTime.recycle();
+				if (_eventTime != null) {
+					_eventTime.recycle();
+				}
 			} catch (Exception e2) {
 				// see above
 			}
@@ -1141,7 +1179,9 @@ public class OpenLogItem implements Serializable {
 	 * olDebugLevel variable.
 	 */
 	private static void debugPrint(Throwable ee) {
-		if ((ee == null) || (debugOut == null)) return;
+		if ((ee == null) || (debugOut == null)) {
+			return;
+		}
 
 		try {
 			// debug level of 1 prints the basic error message#

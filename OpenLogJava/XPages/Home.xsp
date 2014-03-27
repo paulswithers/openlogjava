@@ -68,8 +68,10 @@
 						Full stack traces are still recorded for errors. <b>NOTE</b>The stack trace is the only method 
 						I know of to identify which XPages lifecycle phase an Event / Error is logged for, e.g. you may 
 						get a message logged for Restore View phase because a variable is not available, but the page displays 
-						fine because the relevant variable is available in Render Response.</li></ul>
-						<br/><br/>
+						fine because the relevant variable is available in Render Response.</li>
+						<li><b>xsp.openlog.expireDate</b> can be used to set the ExpireDate field used by auto-archiving. 
+						This should be a number of days, e.g. 30, to auto-expire the log at 30 days from the date logged.</li></ul>
+						<br/>
 
 						See this database's xsp.properties for samples.
 
