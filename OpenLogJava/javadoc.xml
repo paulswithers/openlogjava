@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="javadoc">
     <target name="javadoc">
-        <javadoc access="private" author="true" classpath=".classpath" destdir="Javadoc" 
+        <javadoc access="private" author="true" classpath=".classpath" destdir="C:\Users\withersp\Git Repositories\openlogjava\Javadoc\Documentation" 
         	nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" 
         	packagenames="com.paulwithers.openLog" source="1.6" sourcepath="WebContent\WEB-INF\src" splitindex="true" 
         	stylesheetfile="C:\Work\stylesheet.css" use="true" version="true"
