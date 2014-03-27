@@ -227,6 +227,7 @@ public class OpenLogItem implements Serializable {
 	private transient static Database _logDb;
 	private transient static Boolean _suppressEventStack;
 	private transient static String _logEmail;
+	private transient static String _logExpireDate;
 	private transient static Database _currentDatabase;
 	private transient static DateTime _startTime;
 	private transient static DateTime _eventTime;
@@ -488,7 +489,17 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 * @return the logDbName
+	 * @return the expire date
+	 */
+	public static String getLogExpireDate() {
+		if (StringUtil.isEmpty(_logExpireDate)) {
+			_logExpireDate = getXspProperty("xsp.openlog.expireDate", "");
+		}
+		return _logExpireDate;
+	}
+
+	/**
+	 * @return the log email address
 	 */
 	public static String getLogEmail() {
 		if (StringUtil.isEmpty(_logEmail)) {
@@ -1142,6 +1153,20 @@ public class OpenLogItem implements Serializable {
 				logDoc.replaceItemValue("SendTo", getLogEmail());
 				logDoc.replaceItemValue("From", getUserName());
 				logDoc.replaceItemValue("Principal", getUserName());
+			}
+
+			// Set expiry date, if defined
+			if (!StringUtil.isEmpty(getLogExpireDate())) {
+				try {
+					Integer expiryPeriod = new Integer(getLogExpireDate());
+					_startTime.adjustDay(expiryPeriod);
+					logDoc.replaceItemValue("ExpireDate", _startTime);
+				} catch (Throwable t) {
+					logDoc
+							.replaceItemValue(
+									"ArchiveFlag",
+									"WARNING: Xsp Properties in the application has a non-numeric value for xsp.openlog.expireDate, so cannot be set to auto-expire");
+				}
 			}
 			logDoc.save(true);
 			retval = true;

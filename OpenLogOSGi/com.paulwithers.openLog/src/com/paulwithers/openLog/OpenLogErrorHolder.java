@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import javax.faces.component.UIComponent;
 
 import com.ibm.jscript.InterpretException;
+import com.ibm.xsp.component.xp.XspEventHandler;
 
 /**
  * @author withersp
@@ -124,10 +125,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            InterpretException thrown from SSJS. In SSJS, add a
 	 *            try...catch block.<br/>
 	 *            The "catch" element passes an InterpretException.
-	 * @param control
-	 *            Component the error occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -148,9 +148,10 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addError(Object je, UIComponent control, int severity, String unid) {
+	public void addError(Object je, Object thisObj, int severity, String unid) {
 		try {
 			InterpretException ie = getInterpretException(je);
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newErr = createEventError(ie, "", control, severity, unid);
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -163,10 +164,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            InterpretException thrown from SSJS. In SSJS, add a
 	 *            try...catch block.<br/>
 	 *            The "catch" element passes an InterpretException.
-	 * @param control
-	 *            Component the error occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -183,9 +183,10 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addError(Object je, UIComponent control, int severity) {
+	public void addError(Object je, Object thisObj, int severity) {
 		try {
 			InterpretException ie = getInterpretException(je);
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newErr = createEventError(ie, "", control, severity, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -198,10 +199,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            InterpretException thrown from SSJS. In SSJS, add a
 	 *            try...catch block.<br/>
 	 *            The "catch" element passes an InterpretException.
-	 * @param control
-	 *            Component the error occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * 
 	 *            EXAMPLE
 	 * 
@@ -215,9 +215,10 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            To pass no control, call openLogBean.addError(e, null)
 	 */
-	public void addError(Object je, UIComponent control) {
+	public void addError(Object je, Object thisObj) {
 		try {
 			InterpretException ie = getInterpretException(je);
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newErr = createEventError(ie, "", control, 4, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -232,10 +233,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            The "catch" element passes an InterpretException.
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
-	 * @param control
-	 *            Component the error occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -258,9 +258,10 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addError(Object je, String msg, UIComponent control, int severity, String unid) {
+	public void addError(Object je, String msg, Object thisObj, int severity, String unid) {
 		try {
 			InterpretException ie = getInterpretException(je);
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newErr = createEventError(ie, msg, control, severity, unid);
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -275,10 +276,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            The "catch" element passes an InterpretException.
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
-	 * @param control
-	 *            Component the error occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -295,9 +295,10 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addError(Object je, String msg, UIComponent control, int severity) {
+	public void addError(Object je, String msg, Object thisObj, int severity) {
 		try {
 			InterpretException ie = getInterpretException(je);
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newErr = createEventError(ie, msg, control, severity, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -312,10 +313,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            The "catch" element passes an InterpretException.
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
-	 * @param control
-	 *            Component the error occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * 
 	 *            EXAMPLE
 	 * 
@@ -329,9 +329,10 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            To pass no control, call openLogBean.addError(e, null)
 	 */
-	public void addError(Object je, String msg, UIComponent control) {
+	public void addError(Object je, String msg, Object thisObj) {
 		try {
 			InterpretException ie = getInterpretException(je);
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newErr = createEventError(ie, msg, control, 4, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
@@ -356,10 +357,9 @@ public class OpenLogErrorHolder implements Serializable {
 	/**
 	 * @param msg
 	 *            String message to pass to the event logger
-	 * @param control
-	 *            Component the error occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest
@@ -382,8 +382,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4. To pass no UNID, pass "".
 	 */
-	public void addEvent(String msg, UIComponent control, int severity, String unid) {
+	public void addEvent(String msg, Object thisObj, int severity, String unid) {
 		try {
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newEv = createEventError(null, msg, control, severity, unid);
 			addToEventsList(newEv);
 		} catch (Throwable e) {
@@ -394,10 +395,9 @@ public class OpenLogErrorHolder implements Serializable {
 	/**
 	 * @param msg
 	 *            String message to pass to the event logger
-	 * @param control
-	 *            Component the error occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -414,8 +414,9 @@ public class OpenLogErrorHolder implements Serializable {
 	 * 
 	 *            The default level is 4.
 	 */
-	public void addEvent(String msg, UIComponent control, int severity) {
+	public void addEvent(String msg, Object thisObj, int severity) {
 		try {
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newEv = createEventError(null, msg, control, severity, "");
 			addToEventsList(newEv);
 		} catch (Throwable e) {
@@ -426,10 +427,9 @@ public class OpenLogErrorHolder implements Serializable {
 	/**
 	 * @param msg
 	 *            String message to pass to the event logger
-	 * @param control
-	 *            Component the event occurred on. To avoid hard-coding the
-	 *            control, use "this" in a property or "this.getParent()" in an
-	 *            event:
+	 * @param thisObj
+	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
+	 *            property or an event:
 	 * 
 	 *            EXAMPLE:
 	 * 
@@ -441,12 +441,41 @@ public class OpenLogErrorHolder implements Serializable {
 	 * }
 	 * </pre>
 	 */
-	public void addEvent(String msg, UIComponent control) {
+	public void addEvent(String msg, Object thisObj) {
 		try {
+			UIComponent control = getComponentFromThis(thisObj);
 			EventError newEv = createEventError(null, msg, control, 4, "");
 			addToEventsList(newEv);
 		} catch (Throwable e) {
 			OpenLogItem.logError(e);
+		}
+	}
+
+	/**
+	 * Gets a component based on the object passed in. Should be an instance of UIComponent or XspEventHandler
+	 * 
+	 * @param thisObj
+	 *            Object instance of UIComponent (e.g. XspOutputText) or XspEventHandler or null
+	 * @return UIComponent the component where the error is on
+	 * @since v5.0.0
+	 */
+	public UIComponent getComponentFromThis(Object thisObj) {
+		try {
+			if (null == thisObj) {
+				return null;
+			}
+			if ("com.ibm.xsp.component.xp.XspEventHandler".equals(thisObj.getClass().getName())) {
+				XspEventHandler handler = (XspEventHandler) thisObj;
+				return handler.getParent();
+			} else {
+				return (UIComponent) thisObj;
+			}
+		} catch (Exception e) {
+			// We've got something I wasn't expecting, an exception
+			System.out
+					.println("WARNING: invalid object passed in by developer. Should be a component (not component id) or eventHandler. Found "
+							+ thisObj.getClass().getName());
+			return null;
 		}
 	}
 

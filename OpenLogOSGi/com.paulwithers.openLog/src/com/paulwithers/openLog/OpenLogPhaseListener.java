@@ -54,13 +54,13 @@ public class OpenLogPhaseListener implements PhaseListener {
 		// Add FacesContext messages for anything captured so far
 		if (RENDER_RESPONSE == event.getPhaseId().getOrdinal()) {
 			Map<String, Object> r = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+			Map<String, Object> sessScope = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 			if (null == r.get("error")) {
 				OpenLogItem.setThisAgent(true);
 			}
-			if (null != r.get("openLogBean")) {
-				// requestScope.openLogBean is not null, the developer has
-				// called openLogBean.addError(e,this)
-				OpenLogErrorHolder errList = (OpenLogErrorHolder) r.get("openLogBean");
+			if (null != sessScope.get("openLogBean")) {
+				// sessionScope.openLogBean is not null, the developer has called openLogBean.addError(e,this)
+				OpenLogErrorHolder errList = (OpenLogErrorHolder) sessScope.get("openLogBean");
 				errList.setLoggedErrors(new LinkedHashSet<EventError>());
 				// loop through the ArrayList of EventError objects and add any
 				// errors already captured as a facesMessage
@@ -84,13 +84,13 @@ public class OpenLogPhaseListener implements PhaseListener {
 		try {
 			if (RENDER_RESPONSE == event.getPhaseId().getOrdinal()) {
 				Map<String, Object> r = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+				Map<String, Object> sessScope = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 				if (null != r.get("error")) {
 					processUncaughtException(r);
 
-				} else if (null != r.get("openLogBean")) {
-					// requestScope.openLogBean is not null, the developer has
-					// called openLogBean.addError(e,this)
-					OpenLogErrorHolder errList = (OpenLogErrorHolder) r.get("openLogBean");
+				} else if (null != sessScope.get("openLogBean")) {
+					// sessionScope.openLogBean is not null, the developer has called openLogBean.addError(e,this)
+					OpenLogErrorHolder errList = (OpenLogErrorHolder) sessScope.get("openLogBean");
 					// loop through the ArrayList of EventError objects
 					if (null != errList.getErrors()) {
 						for (EventError error : errList.getErrors()) {
@@ -149,6 +149,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 							}
 						}
 					}
+					sessScope.put("openLogBean", null);
 				}
 			}
 		} catch (Throwable e) {
