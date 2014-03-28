@@ -200,6 +200,7 @@ public class OpenLogItem implements Serializable {
 	// These objects cannot be serialized, so they must be considered transient
 	// so they'll be null on a restore
 	private transient static Session _session;
+	private transient static Session _sessionAsSigner;
 	private transient static Database _logDb;
 	private transient static Boolean _suppressEventStack;
 	private transient static String _logEmail;
@@ -746,6 +747,26 @@ public class OpenLogItem implements Serializable {
 		return _session;
 	}
 
+	private static Session getSessionAsSigner() {
+		if (_sessionAsSigner == null) {
+			_sessionAsSigner = ExtLibUtil.getCurrentSessionAsSigner();
+		} else {
+			try {
+				@SuppressWarnings("unused")
+				boolean pointless = _sessionAsSigner.isOnServer();
+			} catch (NotesException recycleSucks) {
+				// our database object was recycled so we'll need to get it
+				// again
+				try {
+					_sessionAsSigner = ExtLibUtil.getCurrentSessionAsSigner();
+				} catch (Exception e) {
+					debugPrint(e);
+				}
+			}
+		}
+		return _sessionAsSigner;
+	}
+
 	/*
 	 * We can't really safely recycle() any of the global Notes objects, because there's no guarantee that nothing else
 	 * is using them. Instead, just set everything to null
@@ -1027,7 +1048,7 @@ public class OpenLogItem implements Serializable {
 			if (StringUtil.isEmpty(getLogEmail())) {
 				db = getLogDb();
 			} else {
-				db = getSession().getDatabase(getThisServer(), "mail.box", false);
+				db = getSessionAsSigner().getDatabase(getThisServer(), "mail.box", false);
 			}
 			if (db == null) {
 				System.out.println("Could not retrieve database at path " + getLogDbName());
