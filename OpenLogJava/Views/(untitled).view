@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<view xmlns="http://www.lotus.com/dxl" maintenanceversion="1.0" showinmenu="true" publicaccess="false" default="true" noviewformat="true">
+<view xmlns="http://www.lotus.com/dxl" maintenanceversion="1.3" showinmenu="true" publicaccess="false" default="true" noviewformat="true">
   <code event="selection">
     <formula>SELECT @All</formula>
   </code>

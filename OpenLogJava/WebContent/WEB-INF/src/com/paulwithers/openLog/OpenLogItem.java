@@ -272,13 +272,17 @@ public class OpenLogItem implements Serializable {
 	public static void setThisAgent(boolean currPage) {
 		String fromPage = "";
 		String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
-		if (currPage) {
-			fromPage = historyUrls[0];
+		if (StringUtil.isEmpty(historyUrls)) {
+			fromPage = ExtLibUtil.getXspContext().getUrl().toSiteRelativeString(ExtLibUtil.getXspContext());
 		} else {
-			if (historyUrls.length > 1) {
-				fromPage = historyUrls[1];
-			} else {
+			if (currPage) {
 				fromPage = historyUrls[0];
+			} else {
+				if (historyUrls.length > 1) {
+					fromPage = historyUrls[1];
+				} else {
+					fromPage = historyUrls[0];
+				}
 			}
 		}
 		_thisAgent = fromPage;
