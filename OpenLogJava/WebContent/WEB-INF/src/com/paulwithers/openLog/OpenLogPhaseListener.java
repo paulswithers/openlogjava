@@ -245,9 +245,12 @@ public class OpenLogPhaseListener implements PhaseListener {
 							+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
 				}
 			} catch (Throwable t) {
-				msg = "Unexpected error class: " + fe.getCause().getClass().getName() + "\n Message recorded is: "
-						+ fe.getCause().getLocalizedMessage();
-				;
+				try {
+					msg = "Unexpected error class: " + fe.getCause().getClass().getName() + "\n Message recorded is: "
+							+ fe.getCause().getLocalizedMessage();
+				} catch (Throwable ee) {
+					msg = fe.getLocalizedMessage();
+				}
 			}
 			OpenLogItem.logErrorEx(fe.getCause(), msg, null, null);
 
