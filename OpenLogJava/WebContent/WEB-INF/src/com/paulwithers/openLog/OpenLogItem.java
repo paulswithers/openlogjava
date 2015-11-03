@@ -1088,6 +1088,8 @@ public class OpenLogItem implements Serializable {
 
 			if ("".equals(errMsg)) {
 				errMsg = getMessage();
+			} else {
+				errMsg += " - " + getMessage();
 			}
 
 			logDoc.replaceItemValue("LogErrorMessage", errMsg);
@@ -1097,6 +1099,7 @@ public class OpenLogItem implements Serializable {
 			if (getMessage().length() > 32000) {
 				rtitem.appendText(getMessage());
 				rtitem.addNewLine();
+				logDoc.replaceItemValue("LogMessage", getMessage().substring(0, 100) + "...");
 			} else {
 				logDoc.replaceItemValue("LogMessage", getMessage());
 			}

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <note xmlns="http://www.lotus.com/dxl" class="form" maintenanceversion="1.2">
-  <item name="$TITLE">
-    <text>ccLayoutOneUI.xsp</text>
-  </item>
   <item name="$Flags">
-    <text>gC~4;</text>
+    <text>gC~4K</text>
+  </item>
+  <item name="$TITLE" sign="true">
+    <text>ThrownErrorWithMsg.xsp</text>
   </item>
   <item name="$FileNames" sign="true">
-    <text>ccLayoutOneUI.xsp</text>
+    <text>ThrownErrorWithMsg.xsp</text>
   </item>
 </note>

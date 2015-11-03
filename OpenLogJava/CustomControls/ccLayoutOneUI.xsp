@@ -20,15 +20,12 @@
 					<xe:basicContainerNode label="Documentation">
 						<xe:this.children>
 							<xe:pageTreeNode label="Home" page="/Home.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="home"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Using from SSJS" page="/UsingFromSSJS.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="using"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Using from Java" page="/UsingFromJava.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="usingJava"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 						</xe:this.children>
 					</xe:basicContainerNode>
@@ -36,35 +33,30 @@
 					<xe:basicContainerNode label="Examples">
 						<xe:this.children>
 							<xe:pageTreeNode label="Error On Load" page="/ErrorOnLoad.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="load"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Error On Click" page="/ErrorOnClick.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Error On Method" page="/ErrorOnMethod.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Error On Property" page="/ErrorOnProperty.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="click"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Two Errors" page="/TwoErrors.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="two"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Caught Error" page="/ThrownError.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="thrown"}]]></xe:this.selected>
+							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Caught Error With Message" page="/ThrownErrorWithMsg.xsp">
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Caught Error With EL Object" page="/ThrownErrorEL.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="thrownel"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 
 							<xe:pageTreeNode label="Java Error" page="/JavaSample.xsp">
-								<xe:this.selected><![CDATA[${compositeData.selected=="java"}]]></xe:this.selected>
 							</xe:pageTreeNode>
 						</xe:this.children>
 					</xe:basicContainerNode>

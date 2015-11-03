@@ -126,8 +126,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            try...catch block.<br/>
 	 *            The "catch" element passes an InterpretException.
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -165,8 +165,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            try...catch block.<br/>
 	 *            The "catch" element passes an InterpretException.
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -200,8 +200,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            try...catch block.<br/>
 	 *            The "catch" element passes an InterpretException.
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * 
 	 *            EXAMPLE
 	 * 
@@ -234,8 +234,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -277,8 +277,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -314,8 +314,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * 
 	 *            EXAMPLE
 	 * 
@@ -358,8 +358,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 * @param msg
 	 *            String message to pass to the event logger
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest
@@ -396,8 +396,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 * @param msg
 	 *            String message to pass to the event logger
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * @param severity
 	 *            Integer severity level from 1 to 7, corresponding to
 	 *            java.util.logging Levels. 1 is severe, 7 is finest.
@@ -428,8 +428,8 @@ public class OpenLogErrorHolder implements Serializable {
 	 * @param msg
 	 *            String message to pass to the event logger
 	 * @param thisObj
-	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
-	 *            property or an event:
+	 *            Component or eventHandler the error occurred on. To avoid
+	 *            hard-coding the control, use "this" in a property or an event:
 	 * 
 	 *            EXAMPLE:
 	 * 
@@ -452,10 +452,12 @@ public class OpenLogErrorHolder implements Serializable {
 	}
 
 	/**
-	 * Gets a component based on the object passed in. Should be an instance of UIComponent or XspEventHandler
+	 * Gets a component based on the object passed in. Should be an instance of
+	 * UIComponent or XspEventHandler
 	 * 
 	 * @param thisObj
-	 *            Object instance of UIComponent (e.g. XspOutputText) or XspEventHandler or null
+	 *            Object instance of UIComponent (e.g. XspOutputText) or
+	 *            XspEventHandler or null
 	 * @return UIComponent the component where the error is on
 	 * @since v5.0.0
 	 */
@@ -639,6 +641,9 @@ public class OpenLogErrorHolder implements Serializable {
 			}
 			if ("Interpret exception".equals(dispErr)) {
 				dispErr = newErr.getError().getExpressionText();
+			}
+			if (!"".equals(newErr.getMsg())) {
+				dispErr += " - " + newErr.getMsg();
 			}
 			if (OpenLogItem.getDisplayError()) {
 				if (null == ctrlId) {

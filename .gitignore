@@ -12,3 +12,4 @@ nsf/Code/dbscript.lsdb
 
 OpenLogJava/AppProperties/xspdesign.properties
 OpenLogJava/Code/dbscript.lsdb
+*.class

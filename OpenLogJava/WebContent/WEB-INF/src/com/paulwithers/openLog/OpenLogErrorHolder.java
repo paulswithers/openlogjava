@@ -629,6 +629,9 @@ public class OpenLogErrorHolder implements Serializable {
 			if ("Interpret exception".equals(dispErr)) {
 				dispErr = newErr.getError().getExpressionText();
 			}
+			if (!"".equals(newErr.getMsg())) {
+				dispErr += " - " + newErr.getMsg();
+			}
 			if (OpenLogItem.getDisplayError()) {
 				if (null == ctrlId) {
 					OpenLogItem.addFacesMessage(ctrlId, dispErr);
