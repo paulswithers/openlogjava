@@ -31,6 +31,7 @@ import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
 import com.ibm.jscript.InterpretException;
+import com.ibm.jscript.parser.ParseException;
 import com.ibm.xsp.FacesExceptionEx;
 import com.ibm.xsp.exception.EvaluationExceptionEx;
 import com.ibm.xsp.extlib.util.ExtLibUtil;
@@ -180,9 +181,15 @@ public class OpenLogPhaseListener implements PhaseListener {
 			// EvaluationExceptionEx, so SSJS error is on a component property.
 			// Hit by ErrorOnLoad.xsp
 			final EvaluationExceptionEx ee = (EvaluationExceptionEx) error;
-			final InterpretException ie = (InterpretException) ee.getCause();
-			msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId() + " property/event, line " + Integer.toString(ie.getErrorLine()) + ":\n\n"
-					+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
+			if ("com.ibm.jscript.InterpretException".equals(ee.getCause().getClass().getName())) {
+				final InterpretException ie = (InterpretException) ee.getCause();
+				msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId() + " property/event, line " + Integer.toString(ie.getErrorLine()) + ":\n\n"
+						+ ie.getLocalizedMessage() + "\n\n" + ie.getExpressionText();
+			} else if ("com.ibm.jscript.parser.ParseException".equals(ee.getCause().getClass().getName())) {
+				final ParseException ie = (ParseException) ee.getCause();
+				msg = "Error on " + ee.getErrorComponentId() + " " + ee.getErrorPropertyId() + " property/event " + ":\n\n" + ie.getLocalizedMessage();
+
+			}
 			OpenLogItem.logErrorEx(ee, msg, null, null);
 
 		} else if ("javax.faces.FacesException".equals(error.getClass().getName())) {
