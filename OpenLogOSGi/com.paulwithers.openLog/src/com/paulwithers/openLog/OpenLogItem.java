@@ -283,6 +283,7 @@ public class OpenLogItem implements Serializable {
 
 	public static void setThisAgent(boolean currPage) {
 		String fromPage = "";
+		final String includeQueryString = getXspProperty("xsp.openlog.includeQueryString", "false");
 		final String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
 		if (StringUtil.isEmpty(historyUrls)) {
 			fromPage = ExtLibUtil.getXspContext().getUrl().toSiteRelativeString(ExtLibUtil.getXspContext());
@@ -297,10 +298,15 @@ public class OpenLogItem implements Serializable {
 				}
 			}
 		}
-		_thisAgent = fromPage;
-		if (fromPage.indexOf("?") > -1) {
-			_thisAgent = _thisAgent.substring(1, _thisAgent.indexOf("?"));
+		if (fromPage.indexOf("/") > -1) {
+			fromPage = fromPage.substring(1, fromPage.length());
 		}
+		if (!"true".equalsIgnoreCase(includeQueryString)) {
+			if (fromPage.indexOf("?") > -1) {
+				fromPage = fromPage.substring(1, fromPage.indexOf("?"));
+			}
+		}
+		_thisAgent = fromPage;
 	}
 
 	/**
@@ -508,7 +514,7 @@ public class OpenLogItem implements Serializable {
 	public static String getLogDbName() {
 		if ("".equals(_logDbName)) {
 			_logDbName = getXspProperty("xsp.openlog.filepath", "OpenLog.nsf");
-			if ("[CURRENT]".equals(_logDbName.toUpperCase())) {
+			if ("[CURRENT]".equalsIgnoreCase(_logDbName)) {
 				setLogDbName(getCurrentDatabasePath());
 			}
 		}
@@ -526,7 +532,7 @@ public class OpenLogItem implements Serializable {
 		final String dummyVar = getXspProperty("xsp.openlog.suppressEventStack", "false");
 		if (StringUtil.isEmpty(dummyVar)) {
 			setSuppressEventStack(true);
-		} else if ("FALSE".equals(dummyVar.toUpperCase())) {
+		} else if ("false".equalsIgnoreCase(dummyVar)) {
 			setSuppressEventStack(false);
 		} else {
 			setSuppressEventStack(true);
@@ -557,7 +563,7 @@ public class OpenLogItem implements Serializable {
 	public static Boolean getDisplayError() {
 		if (null == _displayError) {
 			final String dummyVar = getXspProperty("xsp.openlog.displayError", "true");
-			if ("FALSE".equals(dummyVar.toUpperCase())) {
+			if ("false".equalsIgnoreCase(dummyVar)) {
 				setDisplayError(false);
 			} else {
 				setDisplayError(true);
