@@ -369,22 +369,27 @@ public class OpenLogItem implements Serializable {
 	 * @return the logDb
 	 */
 	public Database getLogDb() {
+		final String createOnFailVar = OpenLogUtil.getXspProperty("xsp.openLog.createOnFail", "false");
+		boolean createOnFail = false;
+		if ("true".equalsIgnoreCase(createOnFailVar)) {
+			createOnFail = true;
+		}
 		if (_logDb == null) {
 			try {
-				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
-			} catch (Exception e) {
+				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), createOnFail);
+			} catch (final Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		} else {
 			try {
 				@SuppressWarnings("unused")
-				boolean pointless = _logDb.isOpen();
-			} catch (NotesException recycleSucks) {
+				final boolean pointless = _logDb.isOpen();
+			} catch (final NotesException recycleSucks) {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
-					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
-				} catch (Exception e) {
+					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), createOnFail);
+				} catch (final Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
 			}
