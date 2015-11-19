@@ -49,6 +49,7 @@ import lotus.domino.NotesException;
 public class OpenLogPhaseListener implements PhaseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int RENDER_RESPONSE = 6;
+	private static Boolean includeControlIdsForEvents;
 
 	@SuppressWarnings("unchecked")
 	public void beforePhase(PhaseEvent event) {
@@ -130,7 +131,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 					if (null != errList.getEvents()) {
 						for (final EventError eventObj : errList.getEvents()) {
 							String msg = "Event logged for ";
-							if (null != eventObj.getControl()) {
+							if (null != eventObj.getControl() && isIncludeControlIdsForEvents()) {
 								msg = msg + eventObj.getControl().getId();
 							}
 							msg = msg + " " + eventObj.getMsg();
@@ -308,5 +309,27 @@ public class OpenLogPhaseListener implements PhaseListener {
 
 	public PhaseId getPhaseId() {
 		return PhaseId.ANY_PHASE;
+	}
+
+	/**
+	 * @return the includeControlIdsForEvents
+	 */
+	public static Boolean isIncludeControlIdsForEvents() {
+		if (null == includeControlIdsForEvents) {
+			setIncludeControlIdsForEvents();
+		}
+		return includeControlIdsForEvents;
+	}
+
+	/**
+	 * @param includeControlIdsForEvents
+	 *            the includeControlIdsForEvents to set
+	 */
+	public static void setIncludeControlIdsForEvents() {
+		includeControlIdsForEvents = false;
+		final String retVal = OpenLogUtil.getXspProperty("xsp.openlog.suppressEventControl", "");
+		if (!"".equals(retVal)) {
+			includeControlIdsForEvents = true;
+		}
 	}
 }

@@ -98,7 +98,6 @@ import lotus.domino.RichTextItem;
 import lotus.domino.Session;
 
 import com.ibm.commons.util.StringUtil;
-import com.ibm.xsp.application.ApplicationEx;
 import com.ibm.xsp.extlib.util.ExtLibUtil;
 
 public class OpenLogItem implements Serializable {
@@ -235,7 +234,7 @@ public class OpenLogItem implements Serializable {
 			try {
 				_thisDatabase = getCurrentDatabase().getFilePath();
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		}
 		return _thisDatabase;
@@ -252,7 +251,7 @@ public class OpenLogItem implements Serializable {
 					_thisServer = "";
 				}
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		}
 		return _thisServer;
@@ -271,7 +270,7 @@ public class OpenLogItem implements Serializable {
 
 	public static void setThisAgent(boolean currPage) {
 		String fromPage = "";
-		String includeQueryString = getXspProperty("xsp.openlog.includeQueryString", "false");
+		String includeQueryString = OpenLogUtil.getXspProperty("xsp.openlog.includeQueryString", "false");
 		String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
 		if (StringUtil.isEmpty(historyUrls)) {
 			fromPage = ExtLibUtil.getXspContext().getUrl().toSiteRelativeString(ExtLibUtil.getXspContext());
@@ -305,7 +304,7 @@ public class OpenLogItem implements Serializable {
 			try {
 				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		} else {
 			try {
@@ -317,7 +316,7 @@ public class OpenLogItem implements Serializable {
 				try {
 					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
 				} catch (Exception e) {
-					debugPrint(e);
+					OpenLogUtil.debugPrint(e);
 				}
 			}
 		}
@@ -332,7 +331,7 @@ public class OpenLogItem implements Serializable {
 			try {
 				_currentDatabase = getSession().getCurrentDatabase();
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		} else {
 			try {
@@ -344,7 +343,7 @@ public class OpenLogItem implements Serializable {
 				try {
 					_currentDatabase = getSession().getCurrentDatabase();
 				} catch (Exception e) {
-					debugPrint(e);
+					OpenLogUtil.debugPrint(e);
 				}
 			}
 		}
@@ -358,7 +357,7 @@ public class OpenLogItem implements Serializable {
 		try {
 			return getSession().getUserName();
 		} catch (Exception e) {
-			debugPrint(e);
+			OpenLogUtil.debugPrint(e);
 			return "";
 		}
 	}
@@ -370,7 +369,7 @@ public class OpenLogItem implements Serializable {
 		try {
 			return getSession().getEffectiveUserName();
 		} catch (Exception e) {
-			debugPrint(e);
+			OpenLogUtil.debugPrint(e);
 			return "";
 		}
 	}
@@ -405,7 +404,7 @@ public class OpenLogItem implements Serializable {
 					break;
 				}
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		}
 		return _accessLevel;
@@ -420,7 +419,7 @@ public class OpenLogItem implements Serializable {
 			try {
 				_userRoles = getSession().evaluate("@UserRoles");
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		}
 		return _userRoles;
@@ -443,7 +442,7 @@ public class OpenLogItem implements Serializable {
 					}
 				}
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		}
 		return _clientVersion;
@@ -459,7 +458,7 @@ public class OpenLogItem implements Serializable {
 				_startTime.setNow();
 				_startJavaTime = _startTime.toJavaDate();
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		} else {
 			try {
@@ -469,7 +468,7 @@ public class OpenLogItem implements Serializable {
 				try {
 					_startTime = getSession().createDateTime(_startJavaTime);
 				} catch (Exception e) {
-					debugPrint(e);
+					OpenLogUtil.debugPrint(e);
 				}
 			}
 		}
@@ -481,7 +480,7 @@ public class OpenLogItem implements Serializable {
 	 */
 	public static String getLogExpireDate() {
 		if (StringUtil.isEmpty(_logExpireDate)) {
-			_logExpireDate = getXspProperty("xsp.openlog.expireDate", "");
+			_logExpireDate = OpenLogUtil.getXspProperty("xsp.openlog.expireDate", "");
 		}
 		return _logExpireDate;
 	}
@@ -491,7 +490,7 @@ public class OpenLogItem implements Serializable {
 	 */
 	public static String getLogEmail() {
 		if (StringUtil.isEmpty(_logEmail)) {
-			_logEmail = getXspProperty("xsp.openlog.email", "");
+			_logEmail = OpenLogUtil.getXspProperty("xsp.openlog.email", "");
 		}
 		return _logEmail;
 	}
@@ -501,7 +500,7 @@ public class OpenLogItem implements Serializable {
 	 */
 	public static String getLogDbName() {
 		if ("".equals(_logDbName)) {
-			_logDbName = getXspProperty("xsp.openlog.filepath", "OpenLog.nsf");
+			_logDbName = OpenLogUtil.getXspProperty("xsp.openlog.filepath", "OpenLog.nsf");
 			if ("[CURRENT]".equalsIgnoreCase(_logDbName)) {
 				setLogDbName(getThisDatabasePath());
 			}
@@ -516,7 +515,7 @@ public class OpenLogItem implements Serializable {
 	 * @return whether or not stack should be suppressed for events
 	 */
 	public static Boolean getSuppressEventStack() {
-		String dummyVar = getXspProperty("xsp.openlog.suppressEventStack", "false");
+		String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.suppressEventStack", "false");
 		if (StringUtil.isEmpty(dummyVar)) {
 			setSuppressEventStack(true);
 		} else if ("false".equalsIgnoreCase(dummyVar)) {
@@ -539,7 +538,7 @@ public class OpenLogItem implements Serializable {
 		try {
 			return getCurrentDatabase().getFilePath();
 		} catch (NotesException e) {
-			debugPrint(e);
+			OpenLogUtil.debugPrint(e);
 			return "";
 		}
 	}
@@ -549,7 +548,7 @@ public class OpenLogItem implements Serializable {
 	 */
 	public static Boolean getDisplayError() {
 		if (null == _displayError) {
-			String dummyVar = getXspProperty("xsp.openlog.displayError", "true");
+			String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.displayError", "true");
 			if ("false".equalsIgnoreCase(dummyVar)) {
 				setDisplayError(false);
 			} else {
@@ -572,7 +571,7 @@ public class OpenLogItem implements Serializable {
 	 */
 	public static String getDisplayErrorGeneric() {
 		if (null == _displayErrorGeneric) {
-			_displayErrorGeneric = getXspProperty("xsp.openlog.genericErrorMessage", "");
+			_displayErrorGeneric = OpenLogUtil.getXspProperty("xsp.openlog.genericErrorMessage", "");
 		}
 		return _displayErrorGeneric;
 	}
@@ -615,7 +614,7 @@ public class OpenLogItem implements Serializable {
 				_eventTime.setNow();
 				_eventJavaTime = _eventTime.toJavaDate();
 			} catch (Exception e) {
-				debugPrint(e);
+				OpenLogUtil.debugPrint(e);
 			}
 		} else {
 			try {
@@ -625,7 +624,7 @@ public class OpenLogItem implements Serializable {
 				try {
 					_eventTime = getSession().createDateTime(_eventJavaTime);
 				} catch (Exception e) {
-					debugPrint(e);
+					OpenLogUtil.debugPrint(e);
 				}
 			}
 		}
@@ -661,7 +660,7 @@ public class OpenLogItem implements Serializable {
 				try {
 					_errDoc = getCurrentDatabase().getDocumentByUNID(_errDocUnid);
 				} catch (Exception e) {
-					debugPrint(e);
+					OpenLogUtil.debugPrint(e);
 				}
 			}
 		}
@@ -674,9 +673,9 @@ public class OpenLogItem implements Serializable {
 			try {
 				_errDocUnid = doc.getUniversalID();
 			} catch (NotesException ne) {
-				debugPrint(ne);
+				OpenLogUtil.debugPrint(ne);
 			} catch (Exception ee) { // Added PW
-				debugPrint(ee); // Added PW
+				OpenLogUtil.debugPrint(ee); // Added PW
 			}
 		}
 	}
@@ -686,7 +685,7 @@ public class OpenLogItem implements Serializable {
 	// 0 -- internal errors are discarded
 	// 1 -- Exception messages from internal errors are printed
 	// 2 -- stack traces from internal errors are also printed
-	public static transient String olDebugLevel = getXspProperty("xsp.openlog.debugLevel", "2");
+	public static transient String olDebugLevel = OpenLogUtil.getXspProperty("xsp.openlog.debugLevel", "2");
 
 	// debugOut is the PrintStream that errors will be printed to, for debug
 	// levels
@@ -717,26 +716,6 @@ public class OpenLogItem implements Serializable {
 
 	}
 
-	private static String getXspProperty(String propertyName, String defaultValue) {
-		String retVal = ApplicationEx.getInstance().getApplicationProperty(propertyName,
-				getIniVar(propertyName, defaultValue));
-		return retVal;
-	}
-
-	private static String getIniVar(String propertyName, String defaultValue) {
-		try {
-			String newVal = getSession().getEnvironmentString(propertyName, true);
-			if (StringUtil.isNotEmpty(newVal)) {
-				return newVal;
-			} else {
-				return defaultValue;
-			}
-		} catch (NotesException e) {
-			debugPrint(e);
-			return defaultValue;
-		}
-	}
-
 	private static Session getSession() {
 		if (_session == null) {
 			_session = ExtLibUtil.getCurrentSession();
@@ -750,7 +729,7 @@ public class OpenLogItem implements Serializable {
 				try {
 					_session = ExtLibUtil.getCurrentSession();
 				} catch (Exception e) {
-					debugPrint(e);
+					OpenLogUtil.debugPrint(e);
 				}
 			}
 		}
@@ -770,7 +749,7 @@ public class OpenLogItem implements Serializable {
 				try {
 					_sessionAsSigner = ExtLibUtil.getCurrentSessionAsSigner();
 				} catch (Exception e) {
-					debugPrint(e);
+					OpenLogUtil.debugPrint(e);
 				}
 			}
 		}
@@ -829,7 +808,7 @@ public class OpenLogItem implements Serializable {
 				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
 					// NTF - we are by definition in a loop
 					System.out.println(ee.toString());
-					debugPrint(ee);
+					OpenLogUtil.debugPrint(ee);
 					_logSuccess = false;
 					return "";
 				}
@@ -856,7 +835,7 @@ public class OpenLogItem implements Serializable {
 
 		} catch (Exception e) {
 			System.out.println(e.toString());
-			debugPrint(e);
+			OpenLogUtil.debugPrint(e);
 			_logSuccess = false;
 			return "";
 		}
@@ -879,7 +858,7 @@ public class OpenLogItem implements Serializable {
 				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
 					// NTF - we are by definition in a loop
 					System.out.println(ee.toString());
-					debugPrint(ee);
+					OpenLogUtil.debugPrint(ee);
 					_logSuccess = false;
 					return "";
 				}
@@ -896,7 +875,7 @@ public class OpenLogItem implements Serializable {
 			return msg;
 
 		} catch (Exception e) {
-			debugPrint(e);
+			OpenLogUtil.debugPrint(e);
 			_logSuccess = false;
 			return "";
 		}
@@ -923,7 +902,7 @@ public class OpenLogItem implements Serializable {
 			return msg;
 
 		} catch (Exception e) {
-			debugPrint(e);
+			OpenLogUtil.debugPrint(e);
 			_logSuccess = false;
 			return "";
 		}
@@ -1004,7 +983,7 @@ public class OpenLogItem implements Serializable {
 			}
 
 		} catch (Exception e) {
-			debugPrint(e);
+			OpenLogUtil.debugPrint(e);
 		}
 
 		return v;
@@ -1167,7 +1146,7 @@ public class OpenLogItem implements Serializable {
 			logDoc.save(true);
 			retval = true;
 		} catch (Throwable t) {
-			debugPrint(t);
+			OpenLogUtil.debugPrint(t);
 			retval = false;
 		} finally {
 			// recycle all the logDoc objects when we're done with them
@@ -1206,40 +1185,6 @@ public class OpenLogItem implements Serializable {
 		}
 
 		return retval;
-	}
-
-	/*
-	 * This method decides what to do with any Exceptions that we encounter internal to this class, based on the
-	 * olDebugLevel variable.
-	 */
-	private static void debugPrint(Throwable ee) {
-		if ((ee == null) || (debugOut == null)) {
-			return;
-		}
-
-		try {
-			// debug level of 1 prints the basic error message#
-			int debugLevel = Integer.parseInt(olDebugLevel);
-			if (debugLevel >= 1) {
-				String debugMsg = ee.toString();
-				try {
-					if (ee instanceof NotesException) {
-						NotesException ne = (NotesException) ee;
-						debugMsg = "Notes error " + ne.id + ": " + ne.text;
-					}
-				} catch (Exception e2) {
-				}
-				debugOut.println("OpenLogItem error: " + debugMsg);
-			}
-
-			// debug level of 2 prints the whole stack trace
-			if (debugLevel >= 2) {
-				debugOut.print("OpenLogItem error trace: ");
-				ee.printStackTrace(debugOut);
-			}
-		} catch (Exception e) {
-			// at this point, if we have an error just discard it
-		}
 	}
 
 	/**
