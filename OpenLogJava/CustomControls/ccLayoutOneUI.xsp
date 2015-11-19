@@ -58,6 +58,9 @@
 
 							<xe:pageTreeNode label="Java Error" page="/JavaSample.xsp">
 							</xe:pageTreeNode>
+
+							<xe:pageTreeNode label="Thrown Event" page="/ThrownEvent.xsp">
+							</xe:pageTreeNode>
 						</xe:this.children>
 					</xe:basicContainerNode>
 				</xe:this.treeNodes>

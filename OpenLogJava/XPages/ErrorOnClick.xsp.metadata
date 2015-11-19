@@ -1,12 +1,20 @@
-<?xml version="1.0"?>
-<note xmlns="http://www.lotus.com/dxl" class="form">
-  <item name="$Flags">
-    <text>gC~4K</text>
-  </item>
-  <item name="$TITLE">
-    <text>ErrorOnClick.xsp</text>
-  </item>
-  <item name="$FileNames" sign="true">
-    <text>ErrorOnClick.xsp</text>
-  </item>
+<?xml version="1.0" encoding="UTF-8"?><note class="form" maintenanceversion="1.3" replicaid="80257C7700485491" version="9.0" xmlns="http://www.lotus.com/dxl">
+<noteinfo noteid="192" sequence="11" unid="944732DE83E2554A80257C7700485553">
+<created><datetime>20140206T131004,35+00</datetime></created>
+<modified><datetime>20151119T213430,48+00</datetime></modified>
+<revised><datetime>20151119T213430,47+00</datetime></revised>
+<lastaccessed><datetime>20151119T213430,48+00</datetime></lastaccessed>
+<addedtofile><datetime>20140206T131004,58+00</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=admin/O=Intec-PW</name></updatedby>
+<wassignedby><name>CN=admin/O=Intec-PW</name></wassignedby>
+<item name="$Flags"><text>gC~4K</text></item>
+<item name="$TITLE"><text>ErrorOnClick.xsp</text></item>
+<item name="$DesignerVersion"><text>8.5</text></item>
+
+
+
+
+
+<item name="$FileNames" sign="true"><text>ErrorOnClick.xsp</text></item>
+
 </note>

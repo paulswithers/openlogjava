@@ -42,14 +42,13 @@ import com.ibm.xsp.extlib.util.ExtLibUtil;
 import com.paulwithers.openLog.OpenLogErrorHolder.EventError;
 
 /**
- * @author withersp
+ * @author Paul Withers
  * @since 1.0.0
  * 
  */
 public class OpenLogPhaseListener implements PhaseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int RENDER_RESPONSE = 6;
-	private static Boolean includeControlIdsForEvents;
 
 	@SuppressWarnings("unchecked")
 	public void beforePhase(PhaseEvent event) {
@@ -58,7 +57,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 			Map<String, Object> r = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
 			Map<String, Object> sessScope = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 			if (null == r.get("error")) {
-				OpenLogItem.setThisAgent(true);
+				OpenLogUtil.getOpenLogItem().setThisAgent(true);
 			}
 			if (null != sessScope.get("openLogBean")) {
 				// sessionScope.openLogBean is not null, the developer has called openLogBean.addError(e,this)
@@ -117,7 +116,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 											+ error.getUnid();
 								}
 							}
-							OpenLogItem.logErrorEx(error.getError(), msg, severity, passedDoc);
+							OpenLogUtil.logErrorEx(error.getError(), msg, severity, passedDoc);
 							try {
 								passedDoc.recycle();
 							} catch (Throwable e) {
@@ -128,11 +127,12 @@ public class OpenLogPhaseListener implements PhaseListener {
 					// loop through the ArrayList of EventError objects
 					if (null != errList.getEvents()) {
 						for (EventError eventObj : errList.getEvents()) {
-							String msg = "Event logged for ";
-							if (null != eventObj.getControl() && isIncludeControlIdsForEvents()) {
-								msg = msg + eventObj.getControl().getId();
+							String msg = "";
+							if (null != eventObj.getControl()
+									&& !OpenLogUtil.getOpenLogItem().isSuppressControlIdsForEvents()) {
+								msg = msg + "Event logged for " + eventObj.getControl().getId() + " ";
 							}
-							msg = msg + " " + eventObj.getMsg();
+							msg = msg + eventObj.getMsg();
 							Level severity = convertSeverity(eventObj.getSeverity());
 							Document passedDoc = null;
 							if (!"".equals(eventObj.getUnid())) {
@@ -144,7 +144,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 											+ eventObj.getUnid();
 								}
 							}
-							OpenLogItem.logEvent(null, msg, severity, passedDoc);
+							OpenLogUtil.logEvent(null, msg, severity, passedDoc);
 							try {
 								passedDoc.recycle();
 							} catch (Throwable e) {
@@ -157,7 +157,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 			}
 		} catch (Throwable e) {
 			// We've hit an error in our code here, log the error
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -173,7 +173,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 		Object error = r.get("error");
 
 		// Set the agent (page we're on) to the *previous* page
-		OpenLogItem.setThisAgent(false);
+		OpenLogUtil.getOpenLogItem().setThisAgent(false);
 
 		String msg = "";
 		if ("com.ibm.xsp.exception.EvaluationExceptionEx".equals(error.getClass().getName())) {
@@ -191,7 +191,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 						+ ":\n\n" + ie.getLocalizedMessage();
 
 			}
-			OpenLogItem.logErrorEx(ee, msg, null, null);
+			OpenLogUtil.logErrorEx(ee, msg, null, null);
 
 		} else if ("javax.faces.FacesException".equals(error.getClass().getName())) {
 			// FacesException, so error is on event or method in EL
@@ -230,7 +230,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 			} else {
 				msg = msg + fe.getCause().getLocalizedMessage();
 			}
-			OpenLogItem.logErrorEx(fe.getCause(), msg, null, null);
+			OpenLogUtil.logErrorEx(fe.getCause(), msg, null, null);
 		} else if ("com.ibm.xsp.FacesExceptionEx".equals(error.getClass().getName())) {
 			// FacesException, so error is on event - doesn't get hit in examples. Can this still get hit??
 			FacesExceptionEx fe = (FacesExceptionEx) error;
@@ -244,7 +244,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 					IOException e = (IOException) error;
 
 					msg = "Java IO:" + error.toString();
-					OpenLogItem.logErrorEx(e.getCause(), msg, null, null);
+					OpenLogUtil.logErrorEx(e.getCause(), msg, null, null);
 				} else {
 					EvaluationExceptionEx ee = (EvaluationExceptionEx) fe.getCause();
 					InterpretException ie = (InterpretException) ee.getCause();
@@ -261,25 +261,32 @@ public class OpenLogPhaseListener implements PhaseListener {
 					msg = fe.getLocalizedMessage();
 				}
 			}
-			OpenLogItem.logErrorEx(fe.getCause(), msg, null, null);
+			OpenLogUtil.logErrorEx(fe.getCause(), msg, null, null);
 
 		} else if ("javax.faces.el.PropertyNotFoundException".equals(error.getClass().getName())) {
 			// Hit by ErrorOnProperty.xsp
 			// Property not found exception, so error is on a component property
 			PropertyNotFoundException pe = (PropertyNotFoundException) error;
 			msg = "PropertyNotFoundException Error, cannot locate component:\n\n" + pe.getLocalizedMessage();
-			OpenLogItem.logErrorEx(pe, msg, null, null);
+			OpenLogUtil.logErrorEx(pe, msg, null, null);
 		} else {
 			try {
 				System.out.println("Error type not found:" + error.getClass().getName());
 				msg = error.toString();
-				OpenLogItem.logErrorEx((Throwable) error, msg, null, null);
+				OpenLogUtil.logErrorEx((Throwable) error, msg, null, null);
 			} catch (Throwable t) {
 				t.printStackTrace();
 			}
 		}
 	}
 
+	/**
+	 * Converts an integer to a {@link java.util.logging.Level}
+	 * 
+	 * @param severity
+	 *            int severity level from 1 to 7
+	 * @return Level Java logging level
+	 */
 	private Level convertSeverity(int severity) {
 		Level internalLevel = null;
 		switch (severity) {
@@ -307,29 +314,10 @@ public class OpenLogPhaseListener implements PhaseListener {
 		return internalLevel;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.faces.event.PhaseListener#getPhaseId()
+	 */
 	public PhaseId getPhaseId() {
 		return PhaseId.ANY_PHASE;
-	}
-
-	/**
-	 * @return the includeControlIdsForEvents
-	 */
-	public static Boolean isIncludeControlIdsForEvents() {
-		if (null == includeControlIdsForEvents) {
-			setIncludeControlIdsForEvents();
-		}
-		return includeControlIdsForEvents;
-	}
-
-	/**
-	 * @param includeControlIdsForEvents
-	 *            the includeControlIdsForEvents to set
-	 */
-	public static void setIncludeControlIdsForEvents() {
-		includeControlIdsForEvents = false;
-		final String retVal = OpenLogUtil.getXspProperty("xsp.openlog.suppressEventControl", "");
-		if (!"".equals(retVal)) {
-			includeControlIdsForEvents = true;
-		}
 	}
 }

@@ -49,7 +49,7 @@ import lotus.domino.NotesException;
 public class OpenLogPhaseListener implements PhaseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int RENDER_RESPONSE = 6;
-	private static Boolean includeControlIdsForEvents;
+	private static Boolean suppressControlIdsForEvents;
 
 	@SuppressWarnings("unchecked")
 	public void beforePhase(PhaseEvent event) {
@@ -130,11 +130,11 @@ public class OpenLogPhaseListener implements PhaseListener {
 					// loop through the ArrayList of EventError objects
 					if (null != errList.getEvents()) {
 						for (final EventError eventObj : errList.getEvents()) {
-							String msg = "Event logged for ";
-							if (null != eventObj.getControl() && isIncludeControlIdsForEvents()) {
-								msg = msg + eventObj.getControl().getId();
+							String msg = "";
+							if (null != eventObj.getControl() && !isSuppressControlIdsForEvents()) {
+								msg = msg + "Event logged for " + eventObj.getControl().getId() + " ";
 							}
-							msg = msg + " " + eventObj.getMsg();
+							msg = msg + eventObj.getMsg();
 							final Level severity = convertSeverity(eventObj.getSeverity());
 							Document passedDoc = null;
 							if (!"".equals(eventObj.getUnid())) {
@@ -314,22 +314,22 @@ public class OpenLogPhaseListener implements PhaseListener {
 	/**
 	 * @return the includeControlIdsForEvents
 	 */
-	public static Boolean isIncludeControlIdsForEvents() {
-		if (null == includeControlIdsForEvents) {
-			setIncludeControlIdsForEvents();
+	public static Boolean isSuppressControlIdsForEvents() {
+		if (null == suppressControlIdsForEvents) {
+			setSuppressControlIdsForEvents();
 		}
-		return includeControlIdsForEvents;
+		return suppressControlIdsForEvents;
 	}
 
 	/**
 	 * @param includeControlIdsForEvents
 	 *            the includeControlIdsForEvents to set
 	 */
-	public static void setIncludeControlIdsForEvents() {
-		includeControlIdsForEvents = false;
+	public static void setSuppressControlIdsForEvents() {
+		suppressControlIdsForEvents = false;
 		final String retVal = OpenLogUtil.getXspProperty("xsp.openlog.suppressEventControl", "");
 		if (!"".equals(retVal)) {
-			includeControlIdsForEvents = true;
+			suppressControlIdsForEvents = true;
 		}
 	}
 }

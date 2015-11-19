@@ -1,12 +1,22 @@
-<?xml version="1.0"?>
-<note xmlns="http://www.lotus.com/dxl" class="form" maintenanceversion="1.2">
-  <item name="$TITLE">
-    <text>ccLayoutOneUI.xsp</text>
-  </item>
-  <item name="$Flags">
-    <text>gC~4;</text>
-  </item>
-  <item name="$FileNames" sign="true">
-    <text>ccLayoutOneUI.xsp</text>
-  </item>
+<?xml version="1.0" encoding="UTF-8"?><note class="form" maintenanceversion="1.3" replicaid="80257C7700485491" version="9.0" xmlns="http://www.lotus.com/dxl">
+<noteinfo noteid="1da" sequence="45" unid="AD789D186768372C80257C770048BAA0">
+<created><datetime>20140206T131423,68+00</datetime></created>
+<modified><datetime>20151119T213430,46+00</datetime></modified>
+<revised><datetime>20151119T213430,45+00</datetime></revised>
+<lastaccessed><datetime>20151119T213430,46+00</datetime></lastaccessed>
+<addedtofile><datetime>20140206T131423,69+00</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=admin/O=Intec-PW</name></updatedby>
+<wassignedby><name>CN=admin/O=Intec-PW</name></wassignedby>
+<item name="$TITLE"><text>ccLayoutOneUI.xsp</text></item>
+<item name="$Flags"><text>gC~4;</text></item>
+
+
+
+
+
+
+
+<item name="$FileNames" sign="true"><text>ccLayoutOneUI.xsp</text></item>
+<item name="$DesignerVersion"><text>8.5</text></item>
+
 </note>

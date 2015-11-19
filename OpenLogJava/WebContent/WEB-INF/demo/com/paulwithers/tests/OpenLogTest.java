@@ -10,12 +10,14 @@ package com.paulwithers.tests;
 //	express or implied. See the License for the specific language governing
 //	permissions and limitations under the License
 
+import java.util.logging.Level;
+
 import lotus.domino.Database;
 import lotus.domino.Document;
 import lotus.domino.View;
 
 import com.ibm.xsp.extlib.util.ExtLibUtil;
-import com.paulwithers.openLog.OpenLogItem;
+import com.paulwithers.openLog.OpenLogUtil;
 
 public class OpenLogTest {
 	public OpenLogTest() {
@@ -29,9 +31,13 @@ public class OpenLogTest {
 			View tmpView = currDb.getView("Fail");
 			Document errDoc = tmpView.getFirstDocument();
 		} catch (Exception e) {
-			OpenLogItem.logError(e);
-			OpenLogItem.addFacesMessage(null, e.getMessage());
+			OpenLogUtil.logError(e);
+			OpenLogUtil.getOpenLogItem().addFacesMessage(null, e.getMessage());
 		}
 		return retVal;
+	}
+
+	public static void demoEvent() {
+		OpenLogUtil.logEvent(new Throwable(), "This is a Java message", Level.INFO, null);
 	}
 }

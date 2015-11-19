@@ -1,18 +1,38 @@
 package com.paulwithers.openLog;
 
+/*
+
+ <!--
+ Copyright 2015 Paul Withers
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and limitations under the License
+ -->
+
+ */
 
 import java.util.logging.Level;
-
-import com.ibm.commons.util.StringUtil;
-import com.ibm.xsp.application.ApplicationEx;
-import com.ibm.xsp.extlib.util.ExtLibUtil;
 
 import lotus.domino.Document;
 import lotus.domino.NotesException;
 import lotus.domino.Session;
 
+import com.ibm.commons.util.StringUtil;
+import com.ibm.xsp.application.ApplicationEx;
+import com.ibm.xsp.extlib.util.ExtLibUtil;
+
 /**
- * @author withersp
+ * @author Paul Withers
+ * @since 6.0.0
+ * 
+ *        Utility class to allow access without OpenLogItem needing to have static methods
  * 
  */
 public class OpenLogUtil {
@@ -27,10 +47,10 @@ public class OpenLogUtil {
 	}
 
 	/**
-	 * Helper method to give easy access to the XspOpenLogItem
+	 * Helper method to give easy access to the OpenLogItem
 	 * 
-	 * @return XspOpenLogItem
-	 * @since org.openntf.domino 4.5.0
+	 * @return OpenLogItem
+	 * @since 6.0.0
 	 */
 	public static OpenLogItem getOpenLogItem() {
 		if (null == oli_) {
@@ -45,7 +65,7 @@ public class OpenLogUtil {
 	 * @param ee
 	 *            Throwable holding the error
 	 * @return String error message logged
-	 * @since org.openntf.domino 4.5.0
+	 * @since 6.0.0
 	 */
 	public static String logError(final Throwable ee) {
 		return getOpenLogItem().logError(ee);
@@ -58,7 +78,7 @@ public class OpenLogUtil {
 	 *            Session to log the eror for
 	 * @param ee
 	 *            Throwable holding the error
-	 * @since org.openntf.domino 4.5.0
+	 * @since 6.0.0
 	 */
 	public static void logError(final Session s, final Throwable ee) {
 		getOpenLogItem().logError(s, ee);
@@ -77,8 +97,10 @@ public class OpenLogUtil {
 	 *            Level to log at
 	 * @param doc
 	 *            Document to log the error for or null
+	 * @since 6.0.0
 	 */
-	public static void logError(final Session s, final Throwable ee, final String msg, final Level severityType, final Document doc) {
+	public static void logError(final Session s, final Throwable ee, final String msg, final Level severityType,
+			final Document doc) {
 		getOpenLogItem().logError(s, ee, msg, severityType, doc);
 	}
 
@@ -94,7 +116,7 @@ public class OpenLogUtil {
 	 * @param doc
 	 *            Document to log the error for or null
 	 * @return String error message logged
-	 * @since org.openntf.domino 4.5.0
+	 * @since 6.0.0
 	 */
 	public static String logErrorEx(final Throwable ee, final String msg, final Level severityType, final Document doc) {
 		return getOpenLogItem().logErrorEx(ee, msg, severityType, doc);
@@ -113,9 +135,10 @@ public class OpenLogUtil {
 	 *            Level to log at
 	 * @param doc
 	 *            Document to log the event for or null
-	 * @since org.openntf.domino 4.5.0
+	 * @since 6.0.0
 	 */
-	public static void logEvent(final Session s, final Throwable ee, final String msg, final Level severityType, final Document doc) {
+	public static void logEvent(final Session s, final Throwable ee, final String msg, final Level severityType,
+			final Document doc) {
 		getOpenLogItem().logEvent(s, ee, msg, severityType, doc);
 	}
 
@@ -130,7 +153,7 @@ public class OpenLogUtil {
 	 *            Level to log at
 	 * @param doc
 	 *            Document to log the event for or null
-	 * @since org.openntf.domino 4.5.0
+	 * @since 6.0.0
 	 */
 	public static String logEvent(final Throwable ee, final String msg, final Level severityType, final Document doc) {
 		return getOpenLogItem().logEvent(ee, msg, severityType, doc);
@@ -141,13 +164,13 @@ public class OpenLogUtil {
 	 * olDebugLevel variable.
 	 */
 	static void debugPrint(Throwable ee) {
-		if ((ee == null) || (OpenLogItem.debugOut == null)) {
+		if ((ee == null)) {
 			return;
 		}
-	
+
 		try {
-			// debug level of 1 prints the basic error message#
-			int debugLevel = Integer.parseInt(OpenLogItem.olDebugLevel);
+			// debug level of 1 prints the basic error message
+			int debugLevel = Integer.parseInt(getXspProperty("xsp.openlog.debugLevel", "2"));
 			if (debugLevel >= 1) {
 				String debugMsg = ee.toString();
 				try {
@@ -157,20 +180,30 @@ public class OpenLogUtil {
 					}
 				} catch (Exception e2) {
 				}
-				OpenLogItem.debugOut.println("OpenLogItem error: " + debugMsg);
+				System.err.println("OpenLogItem error: " + debugMsg);
 			}
-	
+
 			// debug level of 2 prints the whole stack trace
 			if (debugLevel >= 2) {
-				OpenLogItem.debugOut.print("OpenLogItem error trace: ");
-				ee.printStackTrace(OpenLogItem.debugOut);
+				System.err.println("OpenLogItem error trace: ");
+				ee.printStackTrace();
 			}
 		} catch (Exception e) {
 			// at this point, if we have an error just discard it
 		}
 	}
 
-	static String getIniVar(String propertyName, String defaultValue) {
+	/**
+	 * Get a notes.ini variable value or use default value passed. Moved from OpenLogItem in 6.0.0
+	 * 
+	 * @param propertyName
+	 *            String property to retrieve from notes.ini
+	 * @param defaultValue
+	 *            String default if no notes.ini setting declared
+	 * @return String notes.ini variable value or default
+	 * @since 6.0.0
+	 */
+	public static String getIniVar(String propertyName, String defaultValue) {
 		try {
 			String newVal = ExtLibUtil.getCurrentSession().getEnvironmentString(propertyName, true);
 			if (StringUtil.isNotEmpty(newVal)) {
@@ -184,6 +217,17 @@ public class OpenLogUtil {
 		}
 	}
 
+	/**
+	 * Gets a proeprty value from xsp.properties either in NSF or on server. If it's not found, it falls back to looking
+	 * to notes.ini variable. Moved from OpenLogItem in 6.0.0
+	 * 
+	 * @param propertyName
+	 *            String property to retrieve from notes.ini
+	 * @param defaultValue
+	 *            String default if no notes.ini setting declared
+	 * @return String xsp.property valuenotes.ini variable value or default
+	 * @since 6.0.0
+	 */
 	static String getXspProperty(String propertyName, String defaultValue) {
 		String retVal = ApplicationEx.getInstance().getApplicationProperty(propertyName,
 				getIniVar(propertyName, defaultValue));

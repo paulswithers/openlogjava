@@ -78,7 +78,6 @@ package com.paulwithers.openLog;
  * We'd need a LOT more infrastructure for that!
  */
 
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -165,59 +164,90 @@ public class OpenLogItem implements Serializable {
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	public static final String TYPE_ERROR = "Error";
-	public static final String TYPE_EVENT = "Event";
 
 	private final static String _logFormName = "LogEvent";
 
-	// MODIFY THESE FOR YOUR OWN ENVIRONMENT
-	// (don't forget to use double-backslashes if this database
-	// is in a Windows subdirectory -- like "logs\\OpenLog.nsf")
-	private static String _logDbName = "";
+	private String _logDbName = "";
 
-	private static String _thisDatabase;
-	private static String _thisServer;
-	private static String _thisAgent;
+	private String _thisDatabase;
+	private String _thisServer;
+	private String _thisAgent;
 	// why the object? Because the object version is serializable
-	private static Boolean _logSuccess = true;
-	private static String _accessLevel;
-	private static Vector<String> _userRoles;
-	private static Vector<String> _clientVersion;
-	private static Boolean _displayError;
-	private static String _displayErrorGeneric;
+	private Boolean _logSuccess = true;
+	private String _accessLevel;
+	private Vector<String> _userRoles;
+	private Vector<String> _clientVersion;
 
 	private String _formName;
-	private static Level _severity;
-	private static String _eventType;
-	private static String _message;
+	private Level _severity;
+	private String _eventType;
+	private String _message;
 
-	private static Throwable _baseException;
-	private static Date _startJavaTime;
-	private static Date _eventJavaTime;
-	private static String _errDocUnid;
+	private Throwable _baseException;
+	private Date _startJavaTime;
+	private Date _eventJavaTime;
+	private String _errDocUnid;
 
 	// These objects cannot be serialized, so they must be considered transient
 	// so they'll be null on a restore
-	private transient static Session _session;
-	private transient static Session _sessionAsSigner;
-	private transient static Database _logDb;
-	private transient static Boolean _suppressEventStack;
-	private transient static String _logEmail;
-	private transient static String _logExpireDate;
-	private transient static Database _currentDatabase;
-	private transient static DateTime _startTime;
-	private transient static DateTime _eventTime;
-	private transient static Document _errDoc;
+	private transient Session _session;
+	private transient Session _sessionAsSigner;
+	private transient Database _logDb;
+	private transient Boolean _suppressEventStack;
+	private transient String _logEmail;
+	private transient String _logExpireDate;
+	private transient Database _currentDatabase;
+	private transient DateTime _startTime;
+	private transient DateTime _eventTime;
+	private transient Document _errDoc;
+	private transient Boolean suppressControlIdsForEvents;
+	private transient Boolean _displayError;
+	private transient String _displayErrorGeneric;
 
-	public static void setBase(Throwable base) {
+	/**
+	 * Enum to define log type
+	 * 
+	 * @since 6.0.0
+	 */
+	public static enum LogType {
+		TYPE_ERROR("Error"), TYPE_EVENT("Event");
+
+		private final String value_;
+
+		private LogType(final String value) {
+			value_ = value;
+		}
+
+		public String getValue() {
+			return value_;
+		}
+	}
+
+	/**
+	 * Sets the Throwable that is the error to be logged
+	 * 
+	 * @param base
+	 */
+	public void setBase(Throwable base) {
 		_baseException = base;
 	}
 
-	public static Throwable getBase() {
+	/**
+	 * Gets the Throwable that is the error to be logged
+	 * 
+	 * @return Throwable current error object
+	 */
+	public Throwable getBase() {
 		return _baseException;
 	}
 
-	public static void setSeverity(Level severity) {
+	/**
+	 * Sets the severity level to be logged
+	 * 
+	 * @param severity
+	 *            Level severity
+	 */
+	public void setSeverity(Level severity) {
 		_severity = severity;
 	}
 
@@ -225,11 +255,16 @@ public class OpenLogItem implements Serializable {
 	 * @param message
 	 *            the message to set
 	 */
-	public static void setMessage(String message) {
+	public void setMessage(String message) {
 		_message = message;
 	}
 
-	public static String getThisDatabase() {
+	/**
+	 * Gets the database the error is being logged for
+	 * 
+	 * @return String database filepath
+	 */
+	public String getThisDatabase() {
 		if (_thisDatabase == null) {
 			try {
 				_thisDatabase = getCurrentDatabase().getFilePath();
@@ -243,7 +278,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the thisServer
 	 */
-	public static String getThisServer() {
+	public String getThisServer() {
 		if (_thisServer == null) {
 			try {
 				_thisServer = getSession().getServerName();
@@ -261,14 +296,22 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the thisAgent
 	 */
-	public static String getThisAgent() {
+	public String getThisAgent() {
 		if (_thisAgent == null) {
 			setThisAgent(true);
 		}
 		return _thisAgent;
 	}
 
-	public static void setThisAgent(boolean currPage) {
+	/**
+	 * Complex method to get the "page" to log the error against. xsp.openlog.includeQueryString allows the querystring
+	 * to be logged as well. If parameter is true, it logs for the current XPage being processed. Otherwise, we're now
+	 * in the application's Error page, so we need to get the previous page (if there is one) and log for that.
+	 * 
+	 * @param currPage
+	 *            boolean whether to log current URL or previous
+	 */
+	public void setThisAgent(boolean currPage) {
 		String fromPage = "";
 		String includeQueryString = OpenLogUtil.getXspProperty("xsp.openlog.includeQueryString", "false");
 		String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
@@ -299,7 +342,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the logDb
 	 */
-	public static Database getLogDb() {
+	public Database getLogDb() {
 		if (_logDb == null) {
 			try {
 				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
@@ -326,7 +369,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the currentDatabase
 	 */
-	public static Database getCurrentDatabase() {
+	public Database getCurrentDatabase() {
 		if (_currentDatabase == null) {
 			try {
 				_currentDatabase = getSession().getCurrentDatabase();
@@ -353,7 +396,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the userName
 	 */
-	public static String getUserName() {
+	public String getUserName() {
 		try {
 			return getSession().getUserName();
 		} catch (Exception e) {
@@ -365,7 +408,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the effName
 	 */
-	public static String getEffName() {
+	public String getEffName() {
 		try {
 			return getSession().getEffectiveUserName();
 		} catch (Exception e) {
@@ -377,7 +420,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the accessLevel
 	 */
-	public static String getAccessLevel() {
+	public String getAccessLevel() {
 		if (_accessLevel == null) {
 			try {
 				switch (getCurrentDatabase().getCurrentAccessLevel()) {
@@ -414,7 +457,7 @@ public class OpenLogItem implements Serializable {
 	 * @return the userRoles
 	 */
 	@SuppressWarnings("unchecked")
-	public static Vector<String> getUserRoles() {
+	public Vector<String> getUserRoles() {
 		if (_userRoles == null) {
 			try {
 				_userRoles = getSession().evaluate("@UserRoles");
@@ -426,9 +469,9 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 * @return the clientVersion
+	 * @return the server / client (XPiNC, not Run On Server) Version
 	 */
-	public static Vector<String> getClientVersion() {
+	public Vector<String> getClientVersion() {
 		if (_clientVersion == null) {
 			_clientVersion = new Vector<String>();
 			try {
@@ -451,7 +494,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the startTime
 	 */
-	public static DateTime getStartTime() {
+	public DateTime getStartTime() {
 		if (_startTime == null) {
 			try {
 				_startTime = getSession().createDateTime("Today");
@@ -478,7 +521,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the expire date
 	 */
-	public static String getLogExpireDate() {
+	public String getLogExpireDate() {
 		if (StringUtil.isEmpty(_logExpireDate)) {
 			_logExpireDate = OpenLogUtil.getXspProperty("xsp.openlog.expireDate", "");
 		}
@@ -488,7 +531,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the log email address
 	 */
-	public static String getLogEmail() {
+	public String getLogEmail() {
 		if (StringUtil.isEmpty(_logEmail)) {
 			_logEmail = OpenLogUtil.getXspProperty("xsp.openlog.email", "");
 		}
@@ -498,7 +541,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the logDbName
 	 */
-	public static String getLogDbName() {
+	public String getLogDbName() {
 		if ("".equals(_logDbName)) {
 			_logDbName = OpenLogUtil.getXspProperty("xsp.openlog.filepath", "OpenLog.nsf");
 			if ("[CURRENT]".equalsIgnoreCase(_logDbName)) {
@@ -513,8 +556,9 @@ public class OpenLogItem implements Serializable {
 	 * Anything else will return false
 	 * 
 	 * @return whether or not stack should be suppressed for events
+	 * @since 4.0.0
 	 */
-	public static Boolean getSuppressEventStack() {
+	public Boolean getSuppressEventStack() {
 		String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.suppressEventStack", "false");
 		if (StringUtil.isEmpty(dummyVar)) {
 			setSuppressEventStack(true);
@@ -529,51 +573,22 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @param suppressEventStack
 	 *            Boolean whether or not to suppress stack trace for Events
+	 * @since 4.0.0
 	 */
-	public static void setSuppressEventStack(final Boolean suppressEventStack) {
+	public void setSuppressEventStack(final Boolean suppressEventStack) {
 		_suppressEventStack = suppressEventStack;
 	}
 
-	private static String getThisDatabasePath() {
+	/**
+	 * @return the database path
+	 */
+	private String getThisDatabasePath() {
 		try {
 			return getCurrentDatabase().getFilePath();
 		} catch (NotesException e) {
 			OpenLogUtil.debugPrint(e);
 			return "";
 		}
-	}
-
-	/**
-	 * @return whether errors should be displayed or not
-	 */
-	public static Boolean getDisplayError() {
-		if (null == _displayError) {
-			String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.displayError", "true");
-			if ("false".equalsIgnoreCase(dummyVar)) {
-				setDisplayError(false);
-			} else {
-				setDisplayError(true);
-			}
-		}
-		return _displayError;
-	}
-
-	/**
-	 * @param error
-	 *            whether or not to display the errors
-	 */
-	public static void setDisplayError(Boolean error) {
-		_displayError = error;
-	}
-
-	/**
-	 * @return String of a generic error message or an empty string
-	 */
-	public static String getDisplayErrorGeneric() {
-		if (null == _displayErrorGeneric) {
-			_displayErrorGeneric = OpenLogUtil.getXspProperty("xsp.openlog.genericErrorMessage", "");
-		}
-		return _displayErrorGeneric;
 	}
 
 	/**
@@ -593,21 +608,21 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the errLine
 	 */
-	public static int getErrLine(Throwable ee) {
+	public int getErrLine(Throwable ee) {
 		return ee.getStackTrace()[0].getLineNumber();
 	}
 
 	/**
 	 * @return the severity
 	 */
-	public static Level getSeverity() {
+	public Level getSeverity() {
 		return _severity;
 	}
 
 	/**
 	 * @return the eventTime
 	 */
-	public static DateTime getEventTime() {
+	public DateTime getEventTime() {
 		if (_eventTime == null) {
 			try {
 				_eventTime = getSession().createDateTime("Today");
@@ -634,14 +649,14 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the eventType
 	 */
-	public static String getEventType() {
+	public String getEventType() {
 		return _eventType;
 	}
 
 	/**
 	 * @return the message
 	 */
-	public static String getMessage() {
+	public String getMessage() {
 		if (_message.length() > 0) {
 			return _message;
 		}
@@ -651,7 +666,7 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the errDoc
 	 */
-	public static Document getErrDoc() {
+	public Document getErrDoc() {
 		if (_errDoc != null) {
 			try {
 				@SuppressWarnings("unused")
@@ -667,7 +682,11 @@ public class OpenLogItem implements Serializable {
 		return _errDoc;
 	}
 
-	public static void setErrDoc(Document doc) {
+	/**
+	 * @param doc
+	 *            the document
+	 */
+	public void setErrDoc(Document doc) {
 		if (doc != null) {
 			_errDoc = doc;
 			try {
@@ -685,12 +704,7 @@ public class OpenLogItem implements Serializable {
 	// 0 -- internal errors are discarded
 	// 1 -- Exception messages from internal errors are printed
 	// 2 -- stack traces from internal errors are also printed
-	public static transient String olDebugLevel = OpenLogUtil.getXspProperty("xsp.openlog.debugLevel", "2");
-
-	// debugOut is the PrintStream that errors will be printed to, for debug
-	// levels
-	// greater than 1 (System.err by default)
-	public static PrintStream debugOut = System.err;
+	public transient String olDebugLevel = OpenLogUtil.getXspProperty("xsp.openlog.debugLevel", "2");
 
 	// this is a strange little variable we use to determine how far down the
 	// stack
@@ -700,12 +714,76 @@ public class OpenLogItem implements Serializable {
 
 	// Added PW 27/04/2011 to initialise variables for XPages Java and allow the
 	// user to update logDbName
-	public static void setLogDbName(String newLogPath) {
+	public void setLogDbName(String newLogPath) {
 		_logDbName = newLogPath;
 	}
 
-	public static void setOlDebugLevel(String newDebugLevel) {
+	public void setOlDebugLevel(String newDebugLevel) {
 		olDebugLevel = newDebugLevel;
+	}
+
+	/**
+	 * Allows suppressing control IDs when logging messages from openLogBean with SSJS
+	 * 
+	 * @return the includeControlIdsForEvents
+	 * @since 6.0.0
+	 */
+	public Boolean isSuppressControlIdsForEvents() {
+		if (null == suppressControlIdsForEvents) {
+			setSuppressControlIdsForEvents();
+		}
+		return suppressControlIdsForEvents;
+	}
+
+	/**
+	 * Allows suppressing control IDs when logging messages from openLogBean with SSJS
+	 * 
+	 * @param includeControlIdsForEvents
+	 *            the includeControlIdsForEvents to set
+	 * @since 6.0.0
+	 */
+	public void setSuppressControlIdsForEvents() {
+		suppressControlIdsForEvents = false;
+		final String retVal = OpenLogUtil.getXspProperty("xsp.openlog.suppressEventControl", "");
+		if (!"".equals(retVal)) {
+			suppressControlIdsForEvents = true;
+		}
+	}
+
+	/**
+	 * @return whether errors should be displayed or not
+	 * @since 2.0.0
+	 */
+	public Boolean getDisplayError() {
+		if (null == _displayError) {
+			String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.displayError", "true");
+			if ("false".equalsIgnoreCase(dummyVar)) {
+				setDisplayError(false);
+			} else {
+				setDisplayError(true);
+			}
+		}
+		return _displayError;
+	}
+
+	/**
+	 * @param error
+	 *            whether or not to display the errors
+	 * @since 2.0.0
+	 */
+	public void setDisplayError(Boolean error) {
+		_displayError = error;
+	}
+
+	/**
+	 * @return String of a generic error message or an empty string
+	 * @since 2.0.0
+	 */
+	public String getDisplayErrorGeneric() {
+		if (null == _displayErrorGeneric) {
+			_displayErrorGeneric = OpenLogUtil.getXspProperty("xsp.openlog.genericErrorMessage", "");
+		}
+		return _displayErrorGeneric;
 	}
 
 	/*
@@ -716,7 +794,10 @@ public class OpenLogItem implements Serializable {
 
 	}
 
-	private static Session getSession() {
+	/**
+	 * @return the session
+	 */
+	private Session getSession() {
 		if (_session == null) {
 			_session = ExtLibUtil.getCurrentSession();
 		} else {
@@ -736,7 +817,10 @@ public class OpenLogItem implements Serializable {
 		return _session;
 	}
 
-	private static Session getSessionAsSigner() {
+	/**
+	 * @return the signer session
+	 */
+	private Session getSessionAsSigner() {
 		if (_sessionAsSigner == null) {
 			_sessionAsSigner = ExtLibUtil.getCurrentSessionAsSigner();
 		} else {
@@ -802,7 +886,7 @@ public class OpenLogItem implements Serializable {
 	 * The basic method you can use to log an error. Just pass the Exception that you caught and this method collects
 	 * information and saves it to the OpenLog database.
 	 */
-	public static String logError(Throwable ee) {
+	public String logError(Throwable ee) {
 		if (ee != null) {
 			for (StackTraceElement elem : ee.getStackTrace()) {
 				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
@@ -816,9 +900,8 @@ public class OpenLogItem implements Serializable {
 		}
 		try {
 			StackTraceElement[] s = ee.getStackTrace();
-			FacesMessage m = new FacesMessage("Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber()
-					+ ": " + ee.toString());
-			ExtLibUtil.getXspContext().getFacesContext().addMessage(null, m);
+			String m = "Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber() + ": " + ee.toString();
+			addFacesMessage("", m);
 			setBase(ee);
 
 			// if (ee.getMessage().length() > 0) {
@@ -828,7 +911,7 @@ public class OpenLogItem implements Serializable {
 				setMessage(ee.getClass().getCanonicalName());
 			}
 			setSeverity(Level.WARNING);
-			setEventType(TYPE_ERROR);
+			setEventType(LogType.TYPE_ERROR);
 
 			_logSuccess = writeToLog();
 			return getMessage();
@@ -841,8 +924,12 @@ public class OpenLogItem implements Serializable {
 		}
 	}
 
-	private static void setEventType(String typeError) {
-		_eventType = typeError;
+	/**
+	 * @param typeError
+	 *            LogType of Error or Event
+	 */
+	private void setEventType(LogType typeError) {
+		_eventType = typeError.getValue();
 	}
 
 	/*
@@ -852,7 +939,7 @@ public class OpenLogItem implements Serializable {
 	 * OpenLogItem.SEVERITY_HIGH), and/or a Document that may have something to do with the error (in which case a
 	 * DocLink to that Document will be added to the log document).
 	 */
-	public static String logErrorEx(Throwable ee, String msg, Level severityType, Document doc) {
+	public String logErrorEx(Throwable ee, String msg, Level severityType, Document doc) {
 		if (ee != null) {
 			for (StackTraceElement elem : ee.getStackTrace()) {
 				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
@@ -868,7 +955,7 @@ public class OpenLogItem implements Serializable {
 			setBase((ee == null ? new Throwable() : ee));
 			setMessage((msg == null ? "" : msg));
 			setSeverity(severityType == null ? Level.WARNING : severityType);
-			setEventType(TYPE_ERROR);
+			setEventType(LogType.TYPE_ERROR);
 			setErrDoc(doc);
 
 			_logSuccess = writeToLog();
@@ -887,11 +974,11 @@ public class OpenLogItem implements Serializable {
 	 * OpenLogItem.SEVERITY_MEDIUM, or OpenLogItem.SEVERITY_HIGH), and optionally a Document that may have something to
 	 * do with the event (in which case a DocLink to that Document will be added to the log document).
 	 */
-	public static String logEvent(Throwable ee, String msg, Level severityType, Document doc) {
+	public String logEvent(Throwable ee, String msg, Level severityType, Document doc) {
 		try {
 			setMessage(msg);
 			setSeverity(severityType == null ? Level.INFO : severityType);
-			setEventType(TYPE_EVENT);
+			setEventType(LogType.TYPE_EVENT);
 			setErrDoc(doc);
 			if (ee == null) { // Added PW - LogEvent will not pass a throwable
 				setBase(new Throwable("")); // Added PW
@@ -909,65 +996,10 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/*
-	 * A helper method that gets some basic information for the global variables that's common to all errors and events
-	 * (event time and the name of the calling method).
-	 *
-	 * The stacklevel parameter probably looks a little mysterious. It's supposed to be the number of levels below the
-	 * calling method that we're at right now, so we know how far down the stack trace we need to look to get the name
-	 * of the calling method. For example, if another method called the logError method, and the logError method called
-	 * this method, then the calling method is going to be 2 levels down the stack, so stacklevel should be = 2. That
-	 * may not make sense to anyone but me, but it seems to work...
-	 */
-	// private boolean getBasicLogFields(int stacklevel) {
-	// try {
-	// try {
-	// Throwable ee = new Throwable("whatever");
-	// _stackTrace = getStackTrace(ee, stacklevel + 1);
-	// // stackTrace = getStackTrace(ee);
-	// } catch (Exception e) {
-	// }
-	//
-	// // if (_eventTime == null)
-	// // _eventTime = _session.createDateTime("Today");
-	// // _eventTime.setNow();
-	//
-	// _methodName = getMethodName(_stackTrace, 0);
-	//
-	// return true;
-	// } catch (Exception e) {
-	// debugPrint(e);
-	// return false;
-	// }
-	// }
-	/*
-	 * If an Exception is a NotesException, this method will extract the Notes error number and error message.
-	 */
-	// private boolean setErrorLogFields(Throwable ee) {
-	// try {
-	//
-	// try {
-	// if (ee instanceof NotesException) {
-	// NotesException ne = (NotesException) ee;
-	// setErrNum(ne.id);
-	// setErrMsg(ne.text);
-	// } else {
-	// setErrMsg(getStackTrace().elementAt(0).toString());
-	// }
-	// } catch (Exception e) {
-	// setErrMsg("");
-	// }
-	//
-	// return true;
-	// } catch (Exception e) {
-	// debugPrint(e);
-	// return false;
-	// }
-	// }
-	/*
 	 * Get the stack trace of an Exception as a Vector, without the initial error message, and skipping over a given
 	 * number of items (as determined by the skip variable)
 	 */
-	private static Vector<String> getStackTrace(Throwable ee, int skip) {
+	private Vector<String> getStackTrace(Throwable ee, int skip) {
 		Vector<String> v = new Vector<String>(32);
 		try {
 			StringWriter sw = new StringWriter();
@@ -989,25 +1021,60 @@ public class OpenLogItem implements Serializable {
 		return v;
 	}
 
-	private static Vector<String> getStackTrace(Throwable ee) {
+	/**
+	 * @param ee
+	 *            the Throwable
+	 * @return Vector of stack trace elements
+	 */
+	private Vector<String> getStackTrace(Throwable ee) {
 		return getStackTrace(ee, 0);
 	}
 
-	public static void logError(Session s, Throwable ee) {
+	/**
+	 * @param s
+	 *            Session the session to log for
+	 * @param ee
+	 *            Throwable the error to log
+	 */
+	public void logError(Session s, Throwable ee) {
 		if (s != null) {
 			_session = s;
 		}
 		logError(ee);
 	}
 
-	public static void logError(Session s, Throwable ee, String message, Level severity, Document doc) {
+	/**
+	 * @param s
+	 *            Session the session to log for
+	 * @param ee
+	 *            Throwable the error to log
+	 * @param message
+	 *            String the alternative message to log
+	 * @param severity
+	 *            Level to log as
+	 * @param doc
+	 *            Document to provide link for
+	 */
+	public void logError(Session s, Throwable ee, String message, Level severity, Document doc) {
 		if (s != null) {
 			_session = s;
 		}
 		logErrorEx(ee, message, severity, doc);
 	}
 
-	public static void logEvent(Session s, Throwable ee, String message, Level severity, Document doc) {
+	/**
+	 * @param s
+	 *            Session the session to log for
+	 * @param ee
+	 *            Throwable the event to log
+	 * @param message
+	 *            String the alternative message to log
+	 * @param severity
+	 *            Level to log as
+	 * @param doc
+	 *            Document to provide link for
+	 */
+	public void logEvent(Session s, Throwable ee, String message, Level severity, Document doc) {
 		if (s != null) {
 			_session = s;
 		}
@@ -1025,7 +1092,7 @@ public class OpenLogItem implements Serializable {
 	 * decide to send log information to an alternate database, you can just call this method manually after you've
 	 * called logError or logEvent, and it will write everything to the database of your choice.
 	 */
-	public static boolean writeToLog() {
+	public boolean writeToLog() {
 		// exit early if there is no database
 		Database db = null;
 		boolean retval = false;
@@ -1064,7 +1131,7 @@ public class OpenLogItem implements Serializable {
 					errMsg = ee.getMessage();
 				}
 
-				if (TYPE_EVENT.equals(getEventType())) {
+				if (LogType.TYPE_EVENT.getValue().equals(getEventType())) {
 					if (!getSuppressEventStack()) {
 						logDoc.replaceItemValue("LogStackTrace", getStackTrace(ee));
 					}
@@ -1193,7 +1260,7 @@ public class OpenLogItem implements Serializable {
 	 * @param msg
 	 *            String message to be passed back to the browser
 	 */
-	public static void addFacesMessage(String component, String msg) {
+	public void addFacesMessage(String component, String msg) {
 		if (!"".equals(getDisplayErrorGeneric())) {
 			if (null == ExtLibUtil.getRequestScope().get("genericOpenLogMessage")) {
 				ExtLibUtil.getRequestScope().put("genericOpenLogMessage", "Added");

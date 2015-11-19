@@ -62,10 +62,20 @@ public class OpenLogErrorHolder implements Serializable {
 		return events;
 	}
 
+	/**
+	 * Loads a list of EventError objects that have been logged
+	 * 
+	 * @return LinkedHashSet
+	 */
 	public LinkedHashSet<EventError> getLoggedErrors() {
 		return errors;
 	}
 
+	/**
+	 * Loads a list of EventError objects that have been logged
+	 * 
+	 * @param loggedErrors
+	 */
 	public void setLoggedErrors(LinkedHashSet<EventError> loggedErrors) {
 		this.loggedErrors = loggedErrors;
 	}
@@ -143,7 +153,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newErr = createEventError(ie, "", control, severity, unid);
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -177,7 +187,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newErr = createEventError(ie, "", control, severity, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -208,7 +218,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newErr = createEventError(ie, "", control, 4, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -248,7 +258,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newErr = createEventError(ie, msg, control, severity, unid);
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -284,7 +294,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newErr = createEventError(ie, msg, control, severity, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -317,7 +327,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newErr = createEventError(ie, msg, control, 4, "");
 			addToErrorsList(newErr);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -367,7 +377,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newEv = createEventError(null, msg, control, severity, unid);
 			addToEventsList(newEv);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -399,7 +409,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newEv = createEventError(null, msg, control, severity, "");
 			addToEventsList(newEv);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -426,7 +436,7 @@ public class OpenLogErrorHolder implements Serializable {
 			EventError newEv = createEventError(null, msg, control, 4, "");
 			addToEventsList(newEv);
 		} catch (Throwable e) {
-			OpenLogItem.logError(e);
+			OpenLogUtil.logError(e);
 		}
 	}
 
@@ -436,7 +446,7 @@ public class OpenLogErrorHolder implements Serializable {
 	 * @param thisObj
 	 *            Object instance of UIComponent (e.g. XspOutputText) or XspEventHandler or null
 	 * @return UIComponent the component where the error is on
-	 * @since v5.0.0
+	 * @since 5.0.0
 	 */
 	public UIComponent getComponentFromThis(Object thisObj) {
 		try {
@@ -632,11 +642,11 @@ public class OpenLogErrorHolder implements Serializable {
 			if (!"".equals(newErr.getMsg())) {
 				dispErr += " - " + newErr.getMsg();
 			}
-			if (OpenLogItem.getDisplayError()) {
+			if (OpenLogUtil.getOpenLogItem().getDisplayError()) {
 				if (null == ctrlId) {
-					OpenLogItem.addFacesMessage(ctrlId, dispErr);
+					OpenLogUtil.getOpenLogItem().addFacesMessage(ctrlId, dispErr);
 				} else {
-					OpenLogItem.addFacesMessage(ctrlId, ctrlId.toUpperCase() + ": " + dispErr);
+					OpenLogUtil.getOpenLogItem().addFacesMessage(ctrlId, ctrlId.toUpperCase() + ": " + dispErr);
 				}
 			}
 
