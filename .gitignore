@@ -1,14 +1,4 @@
 
-# Dora Start
-
-xsl/
-nsf/.classpath
-nsf/.project
-nsf/plugin.xml
-nsf/.settings
-nsf/Code/dbscript.lsdb
-
-# Dora Finish
 
 OpenLogJava/AppProperties/xspdesign.properties
 OpenLogJava/Code/dbscript.lsdb
