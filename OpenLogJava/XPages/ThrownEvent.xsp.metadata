@@ -1,20 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><note class="form" maintenanceversion="1.3" replicaid="80257C7700485491" version="9.0" xmlns="http://www.lotus.com/dxl">
-<noteinfo noteid="37a" sequence="12" unid="34E762EA25D8750E80257F02007525D2">
-<created><datetime>20151119T211933,94+00</datetime></created>
-<modified><datetime>20151119T213631,49+00</datetime></modified>
-<revised><datetime>20151119T213631,48+00</datetime></revised>
-<lastaccessed><datetime>20151119T213631,49+00</datetime></lastaccessed>
-<addedtofile><datetime>20151119T211933,95+00</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=admin/O=Intec-PW</name></updatedby>
-<wassignedby><name>CN=admin/O=Intec-PW</name></wassignedby>
-<item name="$Flags"><text>gC~4K</text></item>
-<item name="$TITLE" sign="true"><text>ThrownEvent.xsp</text></item>
-
-
-
-
-
-<item name="$FileNames" sign="true"><text>ThrownEvent.xsp</text></item>
-<item name="$DesignerVersion"><text>8.5</text></item>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<note xmlns="http://www.lotus.com/dxl" class="form">
+  <item name="$Flags">
+    <text>gC~4K</text>
+  </item>
+  <item name="$TITLE" sign="true">
+    <text>ThrownEvent.xsp</text>
+  </item>
+  <item name="$FileNames" sign="true">
+    <text>ThrownEvent.xsp</text>
+  </item>
 </note>

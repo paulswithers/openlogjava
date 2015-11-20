@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<note xmlns="http://www.lotus.com/dxl" class="form" maintenanceversion="1.3">
+<?xml version="1.0" encoding="UTF-8"?>
+<note xmlns="http://www.lotus.com/dxl" class="form">
   <item name="$TITLE">
     <text>Home.xsp</text>
   </item>
