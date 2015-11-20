@@ -369,7 +369,7 @@ public class OpenLogItem implements Serializable {
 	 * @return the logDb
 	 */
 	public Database getLogDb() {
-		final String createOnFailVar = OpenLogUtil.getXspProperty("xsp.openLog.createOnFail", "false");
+		final String createOnFailVar = OpenLogUtil.getXspProperty("xsp.openlog.createOnFail", "false");
 		boolean createOnFail = false;
 		if ("true".equalsIgnoreCase(createOnFailVar)) {
 			createOnFail = true;
