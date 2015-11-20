@@ -89,9 +89,6 @@ import java.util.logging.Level;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
-import com.ibm.commons.util.StringUtil;
-import com.ibm.xsp.extlib.util.ExtLibUtil;
-
 import lotus.domino.Database;
 import lotus.domino.DateTime;
 import lotus.domino.Document;
@@ -99,89 +96,68 @@ import lotus.domino.NotesException;
 import lotus.domino.RichTextItem;
 import lotus.domino.Session;
 
+import com.ibm.commons.util.StringUtil;
+import com.ibm.xsp.extlib.util.ExtLibUtil;
+
 public class OpenLogItem implements Serializable {
 	/*
-	 * ======================================================= <HEADER> NAME:
-	 * OpenLogClass script library VERSION: 20070321a AUTHOR(S): Julian
-	 * Robichaux ( http://www.nsftools.com ) ORIGINAL SOURCE: The OpenLog
-	 * database, available as an open-source project at http://www.OpenNTF.org
-	 * HISTORY: 20070321a: Added startTime global to mark when this particular
-	 * agent run began, so you can group multiple errors/events together more
-	 * easily (see the "by Database and Start Time" view) 20060314a: fixed bug
-	 * where logErrorEx would set the message to the severity type instead of
-	 * the value of msg. 20041111a: made SEVERITY_ and TYPE_ constants public.
-	 * 20040928a: added callingMethodDepth variable, which should be incremented
-	 * by one in the Synchronized class so we'll get a proper reference to the
-	 * calling method; make $PublicAccess = "1" when we create new log docs, so
-	 * users with Depositor access to this database can still create log docs.
-	 * 20040226a: removed synchronization from all methods in the main
-	 * OpenLogItem class and added the new SynchronizedOpenLogItem class, which
-	 * simply extends OpenLogItem and calls all the public methods as
-	 * synchronized methods. Added olDebugLevel and debugOut public members to
-	 * report on internal errors. 20040223a: add variables for user name,
-	 * effective user name, access level, user roles, and client version;
-	 * synchronized most of the public methods. 20040222a: this version got a
-	 * lot less aggressive with the Notes object recycling, due to potential
-	 * problems. Also made LogErrorEx and LogEvent return "" if an error
-	 * occurred (to be consistent with LogError); added OpenLogItem(Session s)
-	 * constructor; now get server name from the Session object, not the
-	 * AgentContext object (due to differences in what those two things will
-	 * give you); add UseDefaultLogDb and UseCustomLogDb methods; added
-	 * getLogDatabase method, to be consistent with LotusScript functions; added
-	 * useServerLogWhenLocal and logToCurrentDatabase variables/options
-	 * 20040217a: this version made the agentContext object global and fixed a
-	 * problem where the agentContext was being recycled in the constuctor (this
-	 * is very bad) 20040214b: initial version
+	 * ======================================================= <HEADER> NAME: OpenLogClass script library VERSION:
+	 * 20070321a AUTHOR(S): Julian Robichaux ( http://www.nsftools.com ) ORIGINAL SOURCE: The OpenLog database,
+	 * available as an open-source project at http://www.OpenNTF.org HISTORY: 20070321a: Added startTime global to mark
+	 * when this particular agent run began, so you can group multiple errors/events together more easily (see the
+	 * "by Database and Start Time" view) 20060314a: fixed bug where logErrorEx would set the message to the severity
+	 * type instead of the value of msg. 20041111a: made SEVERITY_ and TYPE_ constants public. 20040928a: added
+	 * callingMethodDepth variable, which should be incremented by one in the Synchronized class so we'll get a proper
+	 * reference to the calling method; make $PublicAccess = "1" when we create new log docs, so users with Depositor
+	 * access to this database can still create log docs. 20040226a: removed synchronization from all methods in the
+	 * main OpenLogItem class and added the new SynchronizedOpenLogItem class, which simply extends OpenLogItem and
+	 * calls all the public methods as synchronized methods. Added olDebugLevel and debugOut public members to report on
+	 * internal errors. 20040223a: add variables for user name, effective user name, access level, user roles, and
+	 * client version; synchronized most of the public methods. 20040222a: this version got a lot less aggressive with
+	 * the Notes object recycling, due to potential problems. Also made LogErrorEx and LogEvent return "" if an error
+	 * occurred (to be consistent with LogError); added OpenLogItem(Session s) constructor; now get server name from the
+	 * Session object, not the AgentContext object (due to differences in what those two things will give you); add
+	 * UseDefaultLogDb and UseCustomLogDb methods; added getLogDatabase method, to be consistent with LotusScript
+	 * functions; added useServerLogWhenLocal and logToCurrentDatabase variables/options 20040217a: this version made
+	 * the agentContext object global and fixed a problem where the agentContext was being recycled in the constuctor
+	 * (this is very bad) 20040214b: initial version
 	 *
-	 * DISCLAIMER: This code is provided "as-is", and should be used at your own
-	 * risk. The authors make no express or implied warranty about anything, and
-	 * they will not be responsible or liable for any damage caused by the use
-	 * or misuse of this code or its byproducts. No guarantees are made about
-	 * anything.
+	 * DISCLAIMER: This code is provided "as-is", and should be used at your own risk. The authors make no express or
+	 * implied warranty about anything, and they will not be responsible or liable for any damage caused by the use or
+	 * misuse of this code or its byproducts. No guarantees are made about anything.
 	 *
-	 * That being said, you can use, modify, and distribute this code in any way
-	 * you want, as long as you keep this header section intact and in a
-	 * prominent place in the code. </HEADER>
+	 * That being said, you can use, modify, and distribute this code in any way you want, as long as you keep this
+	 * header section intact and in a prominent place in the code. </HEADER>
 	 * =======================================================
 	 *
-	 * This class contains generic functions that can be used to log events and
-	 * errors to the OpenLog database. All you have to do it copy this script
-	 * library to any database that should be sending errors to the OpenLog
-	 * database, and add it to your Java agents using the Edit Project button
-	 * (see the "Using This Database" doc in the OpenLog database for more
-	 * details).
+	 * This class contains generic functions that can be used to log events and errors to the OpenLog database. All you
+	 * have to do it copy this script library to any database that should be sending errors to the OpenLog database, and
+	 * add it to your Java agents using the Edit Project button (see the "Using This Database" doc in the OpenLog
+	 * database for more details).
 	 *
-	 * At the beginning of your agent, create a global instance of this class
-	 * like this:
+	 * At the beginning of your agent, create a global instance of this class like this:
 	 *
 	 * private OpenLogItem oli = new OpenLogItem();
 	 *
-	 * and then in all the try/catch blocks that you want to send errors from,
-	 * add the line:
+	 * and then in all the try/catch blocks that you want to send errors from, add the line:
 	 *
 	 * oli.logError(e);
 	 *
-	 * where "e" is the Exception that you caught. That's all you have to do.
-	 * The LogError method will automatically create a document in the OpenLog
-	 * database that contains all sorts of information about the error that
-	 * occurred, including the name of the agent and function/sub that it
-	 * occurred in.
+	 * where "e" is the Exception that you caught. That's all you have to do. The LogError method will automatically
+	 * create a document in the OpenLog database that contains all sorts of information about the error that occurred,
+	 * including the name of the agent and function/sub that it occurred in.
 	 *
-	 * For additional functionality, you can use the LogErrorEx function to add
-	 * a custom message, a severity level, and/or a link to a NotesDocument to
-	 * the log doc.
+	 * For additional functionality, you can use the LogErrorEx function to add a custom message, a severity level,
+	 * and/or a link to a NotesDocument to the log doc.
 	 *
-	 * In addition, you can use the LogEvent function to add a notification
-	 * document to the OpenLog database.
+	 * In addition, you can use the LogEvent function to add a notification document to the OpenLog database.
 	 *
-	 * You'll notice that I trap and discard almost all of the Exceptions that
-	 * may occur as the methods in this class are running. This is because the
-	 * class is normally only used when an error is occurring anyway, so there's
-	 * not sense in trying to pass any new errors back up the stack.
+	 * You'll notice that I trap and discard almost all of the Exceptions that may occur as the methods in this class
+	 * are running. This is because the class is normally only used when an error is occurring anyway, so there's not
+	 * sense in trying to pass any new errors back up the stack.
 	 *
-	 * The master copy of this script library resides in the OpenLog database.
-	 * All copies of this library in other databases should be set to inherit
-	 * changes from that database.
+	 * The master copy of this script library resides in the OpenLog database. All copies of this library in other
+	 * databases should be set to inherit changes from that database.
 	 */
 
 	/**
@@ -230,7 +206,7 @@ public class OpenLogItem implements Serializable {
 
 	/**
 	 * Enum to define log type
-	 *
+	 * 
 	 * @since 6.0.0
 	 */
 	public static enum LogType {
@@ -249,7 +225,7 @@ public class OpenLogItem implements Serializable {
 
 	/**
 	 * Sets the Throwable that is the error to be logged
-	 *
+	 * 
 	 * @param base
 	 */
 	public void setBase(Throwable base) {
@@ -258,7 +234,7 @@ public class OpenLogItem implements Serializable {
 
 	/**
 	 * Gets the Throwable that is the error to be logged
-	 *
+	 * 
 	 * @return Throwable current error object
 	 */
 	public Throwable getBase() {
@@ -267,7 +243,7 @@ public class OpenLogItem implements Serializable {
 
 	/**
 	 * Sets the severity level to be logged
-	 *
+	 * 
 	 * @param severity
 	 *            Level severity
 	 */
@@ -285,14 +261,14 @@ public class OpenLogItem implements Serializable {
 
 	/**
 	 * Gets the database the error is being logged for
-	 *
+	 * 
 	 * @return String database filepath
 	 */
 	public String getThisDatabase() {
 		if (_thisDatabase == null) {
 			try {
 				_thisDatabase = getCurrentDatabase().getFilePath();
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		}
@@ -309,7 +285,7 @@ public class OpenLogItem implements Serializable {
 				if (_thisServer == null) {
 					_thisServer = "";
 				}
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		}
@@ -328,19 +304,17 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 * Complex method to get the "page" to log the error against.
-	 * xsp.openlog.includeQueryString allows the querystring to be logged as
-	 * well. If parameter is true, it logs for the current XPage being
-	 * processed. Otherwise, we're now in the application's Error page, so we
-	 * need to get the previous page (if there is one) and log for that.
-	 *
+	 * Complex method to get the "page" to log the error against. xsp.openlog.includeQueryString allows the querystring
+	 * to be logged as well. If parameter is true, it logs for the current XPage being processed. Otherwise, we're now
+	 * in the application's Error page, so we need to get the previous page (if there is one) and log for that.
+	 * 
 	 * @param currPage
 	 *            boolean whether to log current URL or previous
 	 */
 	public void setThisAgent(boolean currPage) {
 		String fromPage = "";
-		final String includeQueryString = OpenLogUtil.getXspProperty("xsp.openlog.includeQueryString", "false");
-		final String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
+		String includeQueryString = OpenLogUtil.getXspProperty("xsp.openlog.includeQueryString", "false");
+		String[] historyUrls = ExtLibUtil.getXspContext().getHistoryUrls();
 		if (StringUtil.isEmpty(historyUrls)) {
 			fromPage = ExtLibUtil.getXspContext().getUrl().toSiteRelativeString(ExtLibUtil.getXspContext());
 		} else {
@@ -369,14 +343,9 @@ public class OpenLogItem implements Serializable {
 	 * @return the logDb
 	 */
 	public Database getLogDb() {
-		final String createOnFailVar = OpenLogUtil.getXspProperty("xsp.openlog.createOnFail", "false");
-		boolean createOnFail = false;
-		if ("true".equalsIgnoreCase(createOnFailVar)) {
-			createOnFail = true;
-		}
 		if (_logDb == null) {
 			try {
-				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), createOnFail);
+				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
 			} catch (final Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
@@ -388,7 +357,7 @@ public class OpenLogItem implements Serializable {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
-					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), createOnFail);
+					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
 				} catch (final Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
@@ -404,19 +373,19 @@ public class OpenLogItem implements Serializable {
 		if (_currentDatabase == null) {
 			try {
 				_currentDatabase = getSession().getCurrentDatabase();
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		} else {
 			try {
 				@SuppressWarnings("unused")
-				final boolean pointless = _currentDatabase.isOpen();
-			} catch (final NotesException recycleSucks) {
+				boolean pointless = _currentDatabase.isOpen();
+			} catch (NotesException recycleSucks) {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
 					_currentDatabase = getSession().getCurrentDatabase();
-				} catch (final Exception e) {
+				} catch (Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
 			}
@@ -430,7 +399,7 @@ public class OpenLogItem implements Serializable {
 	public String getUserName() {
 		try {
 			return getSession().getUserName();
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			OpenLogUtil.debugPrint(e);
 			return "";
 		}
@@ -442,7 +411,7 @@ public class OpenLogItem implements Serializable {
 	public String getEffName() {
 		try {
 			return getSession().getEffectiveUserName();
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			OpenLogUtil.debugPrint(e);
 			return "";
 		}
@@ -477,7 +446,7 @@ public class OpenLogItem implements Serializable {
 					_accessLevel = "6: Manager";
 					break;
 				}
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		}
@@ -492,7 +461,7 @@ public class OpenLogItem implements Serializable {
 		if (_userRoles == null) {
 			try {
 				_userRoles = getSession().evaluate("@UserRoles");
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		}
@@ -506,7 +475,7 @@ public class OpenLogItem implements Serializable {
 		if (_clientVersion == null) {
 			_clientVersion = new Vector<String>();
 			try {
-				final String cver = getSession().getNotesVersion();
+				String cver = getSession().getNotesVersion();
 				if (cver != null) {
 					if (cver.indexOf("|") > 0) {
 						_clientVersion.addElement(cver.substring(0, cver.indexOf("|")));
@@ -515,7 +484,7 @@ public class OpenLogItem implements Serializable {
 						_clientVersion.addElement(cver);
 					}
 				}
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		}
@@ -531,17 +500,17 @@ public class OpenLogItem implements Serializable {
 				_startTime = getSession().createDateTime("Today");
 				_startTime.setNow();
 				_startJavaTime = _startTime.toJavaDate();
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		} else {
 			try {
 				@SuppressWarnings("unused")
-				final boolean junk = _startTime.isDST();
-			} catch (final NotesException recycleSucks) {
+				boolean junk = _startTime.isDST();
+			} catch (NotesException recycleSucks) {
 				try {
 					_startTime = getSession().createDateTime(_startJavaTime);
-				} catch (final Exception e) {
+				} catch (Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
 			}
@@ -583,15 +552,14 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 * Gets xsp.property of whether to suppress stack trace. Should be
-	 * xsp.openlog.suppressEventStack=true to suppress. Anything else will
-	 * return false
-	 *
+	 * Gets xsp.property of whether to suppress stack trace. Should be xsp.openlog.suppressEventStack=true to suppress.
+	 * Anything else will return false
+	 * 
 	 * @return whether or not stack should be suppressed for events
 	 * @since 4.0.0
 	 */
 	public Boolean getSuppressEventStack() {
-		final String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.suppressEventStack", "false");
+		String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.suppressEventStack", "false");
 		if (StringUtil.isEmpty(dummyVar)) {
 			setSuppressEventStack(true);
 		} else if ("false".equalsIgnoreCase(dummyVar)) {
@@ -617,7 +585,7 @@ public class OpenLogItem implements Serializable {
 	private String getThisDatabasePath() {
 		try {
 			return getCurrentDatabase().getFilePath();
-		} catch (final NotesException e) {
+		} catch (NotesException e) {
 			OpenLogUtil.debugPrint(e);
 			return "";
 		}
@@ -660,17 +628,17 @@ public class OpenLogItem implements Serializable {
 				_eventTime = getSession().createDateTime("Today");
 				_eventTime.setNow();
 				_eventJavaTime = _eventTime.toJavaDate();
-			} catch (final Exception e) {
+			} catch (Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
 		} else {
 			try {
 				@SuppressWarnings("unused")
-				final boolean junk = _eventTime.isDST();
-			} catch (final NotesException recycleSucks) {
+				boolean junk = _eventTime.isDST();
+			} catch (NotesException recycleSucks) {
 				try {
 					_eventTime = getSession().createDateTime(_eventJavaTime);
-				} catch (final Exception e) {
+				} catch (Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
 			}
@@ -702,11 +670,11 @@ public class OpenLogItem implements Serializable {
 		if (_errDoc != null) {
 			try {
 				@SuppressWarnings("unused")
-				final boolean junk = _errDoc.isProfile();
-			} catch (final NotesException recycleSucks) {
+				boolean junk = _errDoc.isProfile();
+			} catch (NotesException recycleSucks) {
 				try {
 					_errDoc = getCurrentDatabase().getDocumentByUNID(_errDocUnid);
-				} catch (final Exception e) {
+				} catch (Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
 			}
@@ -723,9 +691,9 @@ public class OpenLogItem implements Serializable {
 			_errDoc = doc;
 			try {
 				_errDocUnid = doc.getUniversalID();
-			} catch (final NotesException ne) {
+			} catch (NotesException ne) {
 				OpenLogUtil.debugPrint(ne);
-			} catch (final Exception ee) { // Added PW
+			} catch (Exception ee) { // Added PW
 				OpenLogUtil.debugPrint(ee); // Added PW
 			}
 		}
@@ -755,9 +723,8 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 * Allows suppressing control IDs when logging messages from openLogBean
-	 * with SSJS
-	 *
+	 * Allows suppressing control IDs when logging messages from openLogBean with SSJS
+	 * 
 	 * @return the includeControlIdsForEvents
 	 * @since 6.0.0
 	 */
@@ -769,9 +736,8 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 * Allows suppressing control IDs when logging messages from openLogBean
-	 * with SSJS
-	 *
+	 * Allows suppressing control IDs when logging messages from openLogBean with SSJS
+	 * 
 	 * @param includeControlIdsForEvents
 	 *            the includeControlIdsForEvents to set
 	 * @since 6.0.0
@@ -790,7 +756,7 @@ public class OpenLogItem implements Serializable {
 	 */
 	public Boolean getDisplayError() {
 		if (null == _displayError) {
-			final String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.displayError", "true");
+			String dummyVar = OpenLogUtil.getXspProperty("xsp.openlog.displayError", "true");
 			if ("false".equalsIgnoreCase(dummyVar)) {
 				setDisplayError(false);
 			} else {
@@ -821,9 +787,8 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/*
-	 * Use this constructor when you're creating an instance of the class within
-	 * the confines of an Agent. It will automatically pick up the agent name,
-	 * the current database, and the server.
+	 * Use this constructor when you're creating an instance of the class within the confines of an Agent. It will
+	 * automatically pick up the agent name, the current database, and the server.
 	 */
 	public OpenLogItem() {
 
@@ -838,13 +803,13 @@ public class OpenLogItem implements Serializable {
 		} else {
 			try {
 				@SuppressWarnings("unused")
-				final boolean pointless = _session.isOnServer();
-			} catch (final NotesException recycleSucks) {
+				boolean pointless = _session.isOnServer();
+			} catch (NotesException recycleSucks) {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
 					_session = ExtLibUtil.getCurrentSession();
-				} catch (final Exception e) {
+				} catch (Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
 			}
@@ -861,13 +826,13 @@ public class OpenLogItem implements Serializable {
 		} else {
 			try {
 				@SuppressWarnings("unused")
-				final boolean pointless = _sessionAsSigner.isOnServer();
-			} catch (final NotesException recycleSucks) {
+				boolean pointless = _sessionAsSigner.isOnServer();
+			} catch (NotesException recycleSucks) {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
 					_sessionAsSigner = ExtLibUtil.getCurrentSessionAsSigner();
-				} catch (final Exception e) {
+				} catch (Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
 			}
@@ -876,9 +841,8 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/*
-	 * We can't really safely recycle() any of the global Notes objects, because
-	 * there's no guarantee that nothing else is using them. Instead, just set
-	 * everything to null
+	 * We can't really safely recycle() any of the global Notes objects, because there's no guarantee that nothing else
+	 * is using them. Instead, just set everything to null
 	 */
 	public void recycle() {
 		_errDoc = null;
@@ -919,13 +883,12 @@ public class OpenLogItem implements Serializable {
 	// }
 	// }
 	/*
-	 * The basic method you can use to log an error. Just pass the Exception
-	 * that you caught and this method collects information and saves it to the
-	 * OpenLog database.
+	 * The basic method you can use to log an error. Just pass the Exception that you caught and this method collects
+	 * information and saves it to the OpenLog database.
 	 */
 	public String logError(Throwable ee) {
 		if (ee != null) {
-			for (final StackTraceElement elem : ee.getStackTrace()) {
+			for (StackTraceElement elem : ee.getStackTrace()) {
 				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
 					// NTF - we are by definition in a loop
 					System.out.println(ee.toString());
@@ -936,8 +899,8 @@ public class OpenLogItem implements Serializable {
 			}
 		}
 		try {
-			final StackTraceElement[] s = ee.getStackTrace();
-			final String m = "Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber() + ": " + ee.toString();
+			StackTraceElement[] s = ee.getStackTrace();
+			String m = "Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber() + ": " + ee.toString();
 			addFacesMessage("", m);
 			setBase(ee);
 
@@ -953,7 +916,7 @@ public class OpenLogItem implements Serializable {
 			_logSuccess = writeToLog();
 			return getMessage();
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.toString());
 			OpenLogUtil.debugPrint(e);
 			_logSuccess = false;
@@ -970,17 +933,15 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/*
-	 * A slightly more flexible way to send an error to the OpenLog database.
-	 * This allows you to include a message string (which gets added to the log
-	 * document just before the stack trace), a severity type (normally one of
-	 * the standard severity types within this class: OpenLogItem.SEVERITY_LOW,
-	 * OpenLogItem.SEVERITY_MEDIUM, or OpenLogItem.SEVERITY_HIGH), and/or a
-	 * Document that may have something to do with the error (in which case a
+	 * A slightly more flexible way to send an error to the OpenLog database. This allows you to include a message
+	 * string (which gets added to the log document just before the stack trace), a severity type (normally one of the
+	 * standard severity types within this class: OpenLogItem.SEVERITY_LOW, OpenLogItem.SEVERITY_MEDIUM, or
+	 * OpenLogItem.SEVERITY_HIGH), and/or a Document that may have something to do with the error (in which case a
 	 * DocLink to that Document will be added to the log document).
 	 */
 	public String logErrorEx(Throwable ee, String msg, Level severityType, Document doc) {
 		if (ee != null) {
-			for (final StackTraceElement elem : ee.getStackTrace()) {
+			for (StackTraceElement elem : ee.getStackTrace()) {
 				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
 					// NTF - we are by definition in a loop
 					System.out.println(ee.toString());
@@ -1000,7 +961,7 @@ public class OpenLogItem implements Serializable {
 			_logSuccess = writeToLog();
 			return msg;
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			OpenLogUtil.debugPrint(e);
 			_logSuccess = false;
 			return "";
@@ -1008,13 +969,10 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/*
-	 * This method allows you to log an Event to the OpenLog database. You
-	 * should include a message describing the event, a severity type (normally
-	 * one of the standard severity types within this class:
-	 * OpenLogItem.SEVERITY_LOW, OpenLogItem.SEVERITY_MEDIUM, or
-	 * OpenLogItem.SEVERITY_HIGH), and optionally a Document that may have
-	 * something to do with the event (in which case a DocLink to that Document
-	 * will be added to the log document).
+	 * This method allows you to log an Event to the OpenLog database. You should include a message describing the
+	 * event, a severity type (normally one of the standard severity types within this class: OpenLogItem.SEVERITY_LOW,
+	 * OpenLogItem.SEVERITY_MEDIUM, or OpenLogItem.SEVERITY_HIGH), and optionally a Document that may have something to
+	 * do with the event (in which case a DocLink to that Document will be added to the log document).
 	 */
 	public String logEvent(Throwable ee, String msg, Level severityType, Document doc) {
 		try {
@@ -1030,7 +988,7 @@ public class OpenLogItem implements Serializable {
 			_logSuccess = writeToLog();
 			return msg;
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			OpenLogUtil.debugPrint(e);
 			_logSuccess = false;
 			return "";
@@ -1038,16 +996,15 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/*
-	 * Get the stack trace of an Exception as a Vector, without the initial
-	 * error message, and skipping over a given number of items (as determined
-	 * by the skip variable)
+	 * Get the stack trace of an Exception as a Vector, without the initial error message, and skipping over a given
+	 * number of items (as determined by the skip variable)
 	 */
 	private Vector<String> getStackTrace(Throwable ee, int skip) {
-		final Vector<String> v = new Vector<String>(32);
+		Vector<String> v = new Vector<String>(32);
 		try {
-			final StringWriter sw = new StringWriter();
+			StringWriter sw = new StringWriter();
 			ee.printStackTrace(new PrintWriter(sw));
-			final StringTokenizer st = new StringTokenizer(sw.toString(), "\n");
+			StringTokenizer st = new StringTokenizer(sw.toString(), "\n");
 			int count = 0;
 			while (st.hasMoreTokens()) {
 				if (skip <= count++) {
@@ -1057,7 +1014,7 @@ public class OpenLogItem implements Serializable {
 				}
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			OpenLogUtil.debugPrint(e);
 		}
 
@@ -1125,20 +1082,15 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/*
-	 * This is the method that does the actual logging to the OpenLog database.
-	 * You'll notice that I actually have a Database parameter, which is
-	 * normally a reference to the OpenLog database that you're using. However,
-	 * it occurred to me that you might want to use this class to write to an
-	 * alternate log database at times, so I left you that option (although
-	 * you're stuck with the field names used by the OpenLog database in that
-	 * case).
+	 * This is the method that does the actual logging to the OpenLog database. You'll notice that I actually have a
+	 * Database parameter, which is normally a reference to the OpenLog database that you're using. However, it occurred
+	 * to me that you might want to use this class to write to an alternate log database at times, so I left you that
+	 * option (although you're stuck with the field names used by the OpenLog database in that case).
 	 *
-	 * This method creates a document in the log database, populates the fields
-	 * of that document with the values in our global variables, and adds some
-	 * associated information about any Document that needs to be referenced. If
-	 * you do decide to send log information to an alternate database, you can
-	 * just call this method manually after you've called logError or logEvent,
-	 * and it will write everything to the database of your choice.
+	 * This method creates a document in the log database, populates the fields of that document with the values in our
+	 * global variables, and adds some associated information about any Document that needs to be referenced. If you do
+	 * decide to send log information to an alternate database, you can just call this method manually after you've
+	 * called logError or logEvent, and it will write everything to the database of your choice.
 	 */
 	public boolean writeToLog() {
 		// exit early if there is no database
@@ -1151,6 +1103,9 @@ public class OpenLogItem implements Serializable {
 		try {
 			if (StringUtil.isEmpty(getLogEmail())) {
 				db = getLogDb();
+				if (db == null) {
+					db = createLogDbFromTemplate();
+				}
 			} else {
 				db = getSessionAsSigner().getDatabase(getThisServer(), "mail.box", false);
 			}
@@ -1164,15 +1119,16 @@ public class OpenLogItem implements Serializable {
 
 			logDoc.appendItemValue("Form", _logFormName);
 
-			final Throwable ee = getBase();
+			Throwable ee = getBase();
 			String errMsg = "";
 			if (null != ee) {
-				final StackTraceElement ste = ee.getStackTrace()[0];
+				StackTraceElement ste = ee.getStackTrace()[0];
 				if (ee instanceof NotesException) {
 					logDoc.replaceItemValue("LogErrorNumber", ((NotesException) ee).id);
 					errMsg = ((NotesException) ee).text;
-				} else if ("Interpret exception".equals(ee.getMessage()) && ee instanceof com.ibm.jscript.JavaScriptException) {
-					final com.ibm.jscript.InterpretException ie = (com.ibm.jscript.InterpretException) ee;
+				} else if ("Interpret exception".equals(ee.getMessage())
+						&& ee instanceof com.ibm.jscript.JavaScriptException) {
+					com.ibm.jscript.InterpretException ie = (com.ibm.jscript.InterpretException) ee;
 					errMsg = "Expression Language Interpret Exception " + ie.getExpressionText();
 				} else {
 					errMsg = ee.getMessage();
@@ -1247,17 +1203,19 @@ public class OpenLogItem implements Serializable {
 			// Set expiry date, if defined
 			if (!StringUtil.isEmpty(getLogExpireDate())) {
 				try {
-					final Integer expiryPeriod = new Integer(getLogExpireDate());
+					Integer expiryPeriod = new Integer(getLogExpireDate());
 					_startTime.adjustDay(expiryPeriod);
 					logDoc.replaceItemValue("ExpireDate", _startTime);
-				} catch (final Throwable t) {
-					logDoc.replaceItemValue("ArchiveFlag",
-							"WARNING: Xsp Properties in the application has a non-numeric value for xsp.openlog.expireDate, so cannot be set to auto-expire");
+				} catch (Throwable t) {
+					logDoc
+							.replaceItemValue(
+									"ArchiveFlag",
+									"WARNING: Xsp Properties in the application has a non-numeric value for xsp.openlog.expireDate, so cannot be set to auto-expire");
 				}
 			}
 			logDoc.save(true);
 			retval = true;
-		} catch (final Throwable t) {
+		} catch (Throwable t) {
 			OpenLogUtil.debugPrint(t);
 			retval = false;
 		} finally {
@@ -1266,7 +1224,7 @@ public class OpenLogItem implements Serializable {
 				if (rtitem != null) {
 					rtitem.recycle();
 				}
-			} catch (final Exception e2) {
+			} catch (Exception e2) {
 				// NTF why the hell does .recycle() throw an Exception?
 			}
 			rtitem = null;
@@ -1274,7 +1232,7 @@ public class OpenLogItem implements Serializable {
 				if (logDoc != null) {
 					logDoc.recycle();
 				}
-			} catch (final Exception e2) {
+			} catch (Exception e2) {
 				// see above
 			}
 			logDoc = null;
@@ -1282,7 +1240,7 @@ public class OpenLogItem implements Serializable {
 				if (_startTime != null) {
 					_startTime.recycle();
 				}
-			} catch (final Exception e2) {
+			} catch (Exception e2) {
 				// see above
 			}
 			_startTime = null;
@@ -1290,13 +1248,34 @@ public class OpenLogItem implements Serializable {
 				if (_eventTime != null) {
 					_eventTime.recycle();
 				}
-			} catch (final Exception e2) {
+			} catch (Exception e2) {
 				// see above
 			}
 			_eventTime = null;
 		}
 
 		return retval;
+	}
+
+	/**
+	 * Checks whether there is an org.openlog.templateFilepath xsp/notes.ini variable. If so, creates a copy of that
+	 * database to use as the logDb
+	 * 
+	 * @return Database log database to log to
+	 * @throws NotesException
+	 */
+	private Database createLogDbFromTemplate() throws NotesException {
+		Database returnDb = null;
+		// If a templateFilePath is defined, create a copy of the template to the logDbFilePath
+		String templateFilePath = OpenLogUtil.getXspProperty("xsp.openlog.templateFilepath", "");
+		if (!"".equals(templateFilePath)) {
+			Session sessFullAccess = ExtLibUtil.getCurrentSessionAsSignerWithFullAccess();
+			Database templateDb = sessFullAccess.getDatabase(sessFullAccess.getServerName(), templateFilePath, false);
+			if (null != templateDb) {
+				returnDb = templateDb.createCopy(sessFullAccess.getServerName(), getLogDbName());
+			}
+		}
+		return returnDb;
 	}
 
 	/**

@@ -343,14 +343,9 @@ public class OpenLogItem implements Serializable {
 	 * @return the logDb
 	 */
 	public Database getLogDb() {
-		final String createOnFailVar = OpenLogUtil.getXspProperty("xsp.openlog.createOnFail", "false");
-		boolean createOnFail = false;
-		if ("true".equalsIgnoreCase(createOnFailVar)) {
-			createOnFail = true;
-		}
 		if (_logDb == null) {
 			try {
-				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), createOnFail);
+				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
 			} catch (final Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
@@ -362,7 +357,7 @@ public class OpenLogItem implements Serializable {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
-					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), createOnFail);
+					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
 				} catch (final Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
@@ -1108,6 +1103,9 @@ public class OpenLogItem implements Serializable {
 		try {
 			if (StringUtil.isEmpty(getLogEmail())) {
 				db = getLogDb();
+				if (db == null) {
+					db = createLogDbFromTemplate();
+				}
 			} else {
 				db = getSessionAsSigner().getDatabase(getThisServer(), "mail.box", false);
 			}
@@ -1257,6 +1255,27 @@ public class OpenLogItem implements Serializable {
 		}
 
 		return retval;
+	}
+
+	/**
+	 * Checks whether there is an org.openlog.templateFilepath xsp/notes.ini variable. If so, creates a copy of that
+	 * database to use as the logDb
+	 * 
+	 * @return Database log database to log to
+	 * @throws NotesException
+	 */
+	private Database createLogDbFromTemplate() throws NotesException {
+		Database returnDb = null;
+		// If a templateFilePath is defined, create a copy of the template to the logDbFilePath
+		String templateFilePath = OpenLogUtil.getXspProperty("xsp.openlog.templateFilepath", "");
+		if (!"".equals(templateFilePath)) {
+			Session sessFullAccess = ExtLibUtil.getCurrentSessionAsSignerWithFullAccess();
+			Database templateDb = sessFullAccess.getDatabase(sessFullAccess.getServerName(), templateFilePath, false);
+			if (null != templateDb) {
+				returnDb = templateDb.createCopy(sessFullAccess.getServerName(), getLogDbName());
+			}
+		}
+		return returnDb;
 	}
 
 	/**
