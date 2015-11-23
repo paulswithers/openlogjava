@@ -25,7 +25,7 @@
 				</xp:image>
 				<xp:div styleClass="lotusInfoBox" style="clear:right;text-align:left;">
 					<xp:text escape="false">
-						<xp:this.value><![CDATA[Now <b>OpenLog</b> is easier and more flexible than ever before to use in XPages.<br/><br/>
+						<xp:this.value><![CDATA[XPages OpenLog Logger makes <b>OpenLog</b> easier and more flexible than ever before to use in XPages.<br/><br/>
 						<div>
 						<ul>
 						<li>It is Apache licensed</li>
@@ -44,17 +44,20 @@
 						<li>You can define the OpenLog path and backup debug level (in case of problems
 						creating an OpenLog document) without needing to change the code.</li>
 						<li>Those variables can be defined in xsp.properties on the NSF or the server.
-						You can also define a backup in the notes.ini. If nothing is set "OpenLog.nsf" and "0" are the defaults.</li>
-						<li>The functionality and code can be added to an NSF. Alternatively, it is available
-						as an Extension Library.</li>
+						You can also define a backup in the notes.ini. If nothing is set defaults are used.</li>
+						<li>The functionality and code are available as an OSGi plugin (the best practice approach) 
+						but can also be included in individual NSFs.</li>
+						<li>If you are using OpenNTF Domino API, all the functionality is already included in that product. 
+						Instead of OpenLogUtil, use XspOpenLogUtil. Instead of OpenLogUtil.getOpenLogItem(), 
+						use XspOpenLogUtil.getXspOpenLogItem(). All other method names are unchanged.</li>
 						</ul></div><br/>
 
-						Three different configurable settings can be set in the xsp.properties of the
+						Configuration settings can be set in the xsp.properties of the
 						database or server or in the server's notes.ini. They are retrieved in that order.
 						<ul><li>Set the OpenLog path by using <b>xsp.openlog.filepath</b>, defaulting to "OpenLog.nsf"</li>
 						<li>Set debug level if errors occur in OpenLogItem class using <b>xsp.openlog.debugLevel</b>. The 
 						default is 2, to log just full details. 1 will log just the message, 0 will log nothing.
-						<li>By default SSJS errors will now also be added to a FacesMessage, so displayed if a partial 
+						<li>By default SSJS errors will also be added to a FacesMessage, so displayed if a partial 
 						refresh occurs. The error also includes the control id the error relates to, if an id has
 						been defined (best practice). To suppress this set <b>xsp.openlog.displayError=false</b></li>
 						<li>xsp.openlog.genericErrorMessage can be used to define a generic error message to 
@@ -72,7 +75,11 @@
 						<li><b>xsp.openlog.expireDate</b> can be used to set the ExpireDate field used by auto-archiving. 
 						This should be a number of days, e.g. 30, to auto-expire the log at 30 days from the date logged.</li>
 						<li><b>xsp.openlog.includeQueryString</b> can be used to include any query string values (e.g. ?open&login) 
-						in the "Agent" field in the OpenLog log.</li></ul>
+						in the "Agent" field in the OpenLog log.</li>
+						<li><b>xsp.openlog.suppressEventControl</b> can be used to suppress the ID of the control triggering 
+						an Event when logging from SSJS.</li>
+						<li><b>xsp.openlog.templateFilepath</b> can be used to define a template filepath. If no database exists 
+						at the OpenLog path, a new database will be created based on the template.</li></ul>
 						<br/>
 
 						See this database's xsp.properties for samples.
