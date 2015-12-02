@@ -424,6 +424,11 @@ public class OpenLogItem implements Serializable {
 		_currentDatabase = db;
 	}
 
+	/**
+	 * Gets the database path from getCurrentDatabase
+	 *
+	 * @return String current database path
+	 */
 	public String getCurrentDatabasePath() {
 		try {
 			final Database db = getCurrentDatabase();
@@ -564,7 +569,7 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 *
+	 * Resets all internal variables
 	 */
 	public void reinitialiseSettings() {
 		_logEmail = null;

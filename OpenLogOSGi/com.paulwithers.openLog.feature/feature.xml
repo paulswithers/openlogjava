@@ -2,11 +2,11 @@
 <feature
       id="com.paulwithers.openLog.feature"
       label="OpenLog Feature"
-      version="6.0.0.qualifier"
+      version="6.0.1.qualifier"
       provider-name="OpenNTF">
 
    <description url="http://www.example.com/description">
-     XPages OpenLog Logger
+      XPages OpenLog Logger
    </description>
 
    <copyright url="http://www.example.com/copyright">
