@@ -360,7 +360,7 @@ public class OpenLogItem implements Serializable {
 		}
 		if (!"true".equalsIgnoreCase(includeQueryString)) {
 			if (fromPage.indexOf("?") > -1) {
-				fromPage = fromPage.substring(1, fromPage.indexOf("?"));
+				fromPage = fromPage.substring(0, fromPage.indexOf("?"));
 			}
 		}
 		_thisAgent = fromPage;
@@ -971,7 +971,8 @@ public class OpenLogItem implements Serializable {
 		}
 		try {
 			final StackTraceElement[] s = ee.getStackTrace();
-			final String m = "Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber() + ": " + ee.toString();
+			final String m = "Error in " + s[0].getClassName() + ", line " + s[0].getLineNumber() + ": "
+					+ ee.toString();
 			addFacesMessage("", m);
 			setBase(ee);
 
@@ -1222,7 +1223,8 @@ public class OpenLogItem implements Serializable {
 				if (ee instanceof NotesException) {
 					logDoc.replaceItemValue("LogErrorNumber", ((NotesException) ee).id);
 					errMsg = ((NotesException) ee).text;
-				} else if ("Interpret exception".equals(ee.getMessage()) && ee instanceof com.ibm.jscript.JavaScriptException) {
+				} else if ("Interpret exception".equals(ee.getMessage())
+						&& ee instanceof com.ibm.jscript.JavaScriptException) {
 					final com.ibm.jscript.InterpretException ie = (com.ibm.jscript.InterpretException) ee;
 					errMsg = "Expression Language Interpret Exception " + ie.getExpressionText();
 				} else {
@@ -1364,7 +1366,8 @@ public class OpenLogItem implements Serializable {
 		final String templateFilePath = OpenLogUtil.getXspProperty("xsp.openlog.templateFilepath", "");
 		if (!"".equals(templateFilePath)) {
 			final Session sessFullAccess = ExtLibUtil.getCurrentSessionAsSignerWithFullAccess();
-			final Database templateDb = sessFullAccess.getDatabase(sessFullAccess.getServerName(), templateFilePath, false);
+			final Database templateDb = sessFullAccess.getDatabase(sessFullAccess.getServerName(), templateFilePath,
+					false);
 			if (null != templateDb) {
 				returnDb = templateDb.createCopy(sessFullAccess.getServerName(), getLogDbName());
 			}
