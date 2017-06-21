@@ -20,6 +20,7 @@ package com.paulwithers.openLog;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.logging.Level;
 
 import javax.faces.component.UIComponent;
 
@@ -456,6 +457,14 @@ public class OpenLogErrorHolder implements Serializable {
 			if ("com.ibm.xsp.component.xp.XspEventHandler".equals(thisObj.getClass().getName())) {
 				XspEventHandler handler = (XspEventHandler) thisObj;
 				return handler.getParent();
+			} else if ("com.ibm.jscript.types.FBSGlobalObject".equals(thisObj.getClass().getName())) {
+				OpenLogUtil
+						.logErrorEx(
+								new Throwable(),
+								"Developer has passed 'this' directly from an SSJS function in a Script Library. "
+										+ "Please note, SSJS Script Libraries have no context for components. You must pass the relevant component into your SSJS function as a parameter.",
+								Level.WARNING, null);
+				return null;
 			} else {
 				return (UIComponent) thisObj;
 			}

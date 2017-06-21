@@ -47,6 +47,15 @@ public class OpenLogUtil {
 	}
 
 	/**
+	 * Return current XPages OpenLog Logger version
+	 * 
+	 * @return Current version, should be incremented
+	 */
+	public static String getXolVersion() {
+		return "7.0.0";
+	}
+
+	/**
 	 * Helper method to give easy access to the OpenLogItem
 	 * 
 	 * @return OpenLogItem

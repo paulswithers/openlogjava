@@ -56,6 +56,9 @@
 							<xe:pageTreeNode label="Caught Error With EL Object" page="/ThrownErrorEL.xsp">
 							</xe:pageTreeNode>
 
+							<xe:pageTreeNode label="Caught Error Passing Incorrectly from SL" page="/ThrownErrorSL.xsp">
+							</xe:pageTreeNode>
+
 							<xe:pageTreeNode label="Java Error" page="/JavaSample.xsp">
 							</xe:pageTreeNode>
 
