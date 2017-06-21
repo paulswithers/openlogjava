@@ -20,13 +20,13 @@ package com.paulwithers.openLog;
 
 import java.util.logging.Level;
 
-import lotus.domino.Document;
-import lotus.domino.NotesException;
-import lotus.domino.Session;
-
 import com.ibm.commons.util.StringUtil;
 import com.ibm.xsp.application.ApplicationEx;
 import com.ibm.xsp.extlib.util.ExtLibUtil;
+
+import lotus.domino.Document;
+import lotus.domino.NotesException;
+import lotus.domino.Session;
 
 /**
  * @author Paul Withers
@@ -57,6 +57,15 @@ public class OpenLogUtil {
 			oli_ = new OpenLogItem();
 		}
 		return oli_;
+	}
+
+	/**
+	 * Return current XPages OpenLog Logger version
+	 * 
+	 * @return Current version, should be incremented
+	 */
+	public static String getXolVersion() {
+		return Activator.getVersion();
 	}
 
 	/**
