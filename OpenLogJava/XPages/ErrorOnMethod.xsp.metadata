@@ -3,10 +3,10 @@
   <item name="$Flags">
     <text>gC~4K</text>
   </item>
-  <item name="$FileNames" sign="true">
-    <text>ErrorOnVariable.xsp</text>
-  </item>
   <item name="$TITLE" sign="true">
+    <text>ErrorOnMethod.xsp</text>
+  </item>
+  <item name="$FileNames" sign="true">
     <text>ErrorOnMethod.xsp</text>
   </item>
 </note>
