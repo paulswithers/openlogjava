@@ -162,6 +162,7 @@ public class OpenLogUtil {
 	 *            Level to log at
 	 * @param doc
 	 *            Document to log the event for or null
+	 * @return String msg parameter passed into this method
 	 * @since 6.0.0
 	 */
 	public static String logEvent(final Throwable ee, final String msg, final Level severityType, final Document doc) {

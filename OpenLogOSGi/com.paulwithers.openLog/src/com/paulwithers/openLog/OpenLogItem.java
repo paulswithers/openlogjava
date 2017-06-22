@@ -252,6 +252,7 @@ public class OpenLogItem implements Serializable {
 	 * Sets the Throwable that is the error to be logged
 	 *
 	 * @param base
+	 *            Throwable, the error to be logged
 	 */
 	public void setBase(Throwable base) {
 		_baseException = base;
@@ -672,6 +673,8 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
+	 * @param ee
+	 *            Throwable from which to retrieve the stack trace
 	 * @return the errLine
 	 */
 	public int getErrLine(Throwable ee) {
@@ -806,8 +809,6 @@ public class OpenLogItem implements Serializable {
 	 * Allows suppressing control IDs when logging messages from openLogBean
 	 * with SSJS
 	 *
-	 * @param includeControlIdsForEvents
-	 *            the includeControlIdsForEvents to set
 	 * @since 6.0.0
 	 */
 	public void setSuppressControlIdsForEvents() {
@@ -1353,11 +1354,12 @@ public class OpenLogItem implements Serializable {
 	}
 
 	/**
-	 * Checks whether there is an org.openlog.templateFilepath xsp/notes.ini
-	 * variable. If so, creates a copy of that database to use as the logDb
+	 * Checks whether there is an org.openlog.templateFilepath xsp/notes.ini variable. If so, creates a copy of that
+	 * database to use as the logDb
 	 *
 	 * @return Database log database to log to
 	 * @throws NotesException
+	 *             when using core lotus.domino classes
 	 */
 	private Database createLogDbFromTemplate() throws NotesException {
 		Database returnDb = null;

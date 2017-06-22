@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import javax.faces.component.UIComponent;
 
 import com.ibm.jscript.InterpretException;
+import com.ibm.jscript.types.FBSGlobalObject;
 import com.ibm.xsp.component.xp.XspEventHandler;
 
 /**
@@ -48,7 +49,7 @@ public class OpenLogErrorHolder implements Serializable {
 	/**
 	 * LinkedHashSet (array of EventError objects in the order they were inserted)
 	 * 
-	 * @return LinkedHashSet Errors or Events as a list
+	 * @return LinkedHashSet Errors as a list
 	 */
 	public LinkedHashSet<EventError> getErrors() {
 		return errors;
@@ -57,7 +58,7 @@ public class OpenLogErrorHolder implements Serializable {
 	/**
 	 * Loads a list of EventError objects, see {@link #getErrors()}
 	 * 
-	 * @return LinkedHashSet
+	 * @return LinkedHashSet Events as a list
 	 */
 	public LinkedHashSet<EventError> getEvents() {
 		return events;
@@ -66,7 +67,7 @@ public class OpenLogErrorHolder implements Serializable {
 	/**
 	 * Loads a list of EventError objects that have been logged
 	 * 
-	 * @return LinkedHashSet
+	 * @return LinkedHashSet EventError objects for errors to be logged
 	 */
 	public LinkedHashSet<EventError> getLoggedErrors() {
 		return errors;
@@ -76,6 +77,7 @@ public class OpenLogErrorHolder implements Serializable {
 	 * Loads a list of EventError objects that have been logged
 	 * 
 	 * @param loggedErrors
+	 *            EventError objects for errors to be logged
 	 */
 	public void setLoggedErrors(LinkedHashSet<EventError> loggedErrors) {
 		this.loggedErrors = loggedErrors;
@@ -92,7 +94,7 @@ public class OpenLogErrorHolder implements Serializable {
 	 *            integer (1-7) of severity
 	 * @param unid
 	 *            document error is related to
-	 * @return
+	 * @return EventError object containing the details passed
 	 */
 	private EventError createEventError(InterpretException ie, String msg, UIComponent control, int severity,
 			String unid) {
@@ -105,6 +107,14 @@ public class OpenLogErrorHolder implements Serializable {
 		return newErr;
 	}
 
+	/**
+	 * @param je
+	 *            Object that is the error object from SSJS
+	 * @return InterpretException object, the error if it is alreadt an InterpretException or a new InterpretException
+	 *         generated for the object passed in
+	 * 
+	 * @since 4.0.0
+	 */
 	public InterpretException getInterpretException(Object je) {
 		try {
 			String className = je.getClass().getName();
@@ -123,8 +133,8 @@ public class OpenLogErrorHolder implements Serializable {
 	}
 
 	/**
-	 * @param ie
-	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br/>
+	 * @param je
+	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br>
 	 *            The "catch" element passes an InterpretException.
 	 * @param thisObj
 	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
@@ -159,8 +169,8 @@ public class OpenLogErrorHolder implements Serializable {
 	}
 
 	/**
-	 * @param ie
-	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br/>
+	 * @param je
+	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br>
 	 *            The "catch" element passes an InterpretException.
 	 * @param thisObj
 	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
@@ -193,8 +203,8 @@ public class OpenLogErrorHolder implements Serializable {
 	}
 
 	/**
-	 * @param ie
-	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br/>
+	 * @param je
+	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br>
 	 *            The "catch" element passes an InterpretException.
 	 * @param thisObj
 	 *            Component or eventHandler the error occurred on. To avoid hard-coding the control, use "this" in a
@@ -224,8 +234,8 @@ public class OpenLogErrorHolder implements Serializable {
 	}
 
 	/**
-	 * @param ie
-	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br/>
+	 * @param je
+	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br>
 	 *            The "catch" element passes an InterpretException.
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
@@ -264,8 +274,8 @@ public class OpenLogErrorHolder implements Serializable {
 	}
 
 	/**
-	 * @param ie
-	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br/>
+	 * @param je
+	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br>
 	 *            The "catch" element passes an InterpretException.
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
@@ -300,8 +310,8 @@ public class OpenLogErrorHolder implements Serializable {
 	}
 
 	/**
-	 * @param ie
-	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br/>
+	 * @param je
+	 *            InterpretException thrown from SSJS. In SSJS, add a try...catch block.<br>
 	 *            The "catch" element passes an InterpretException.
 	 * @param msg
 	 *            An additional message to pass to OpenLog.
@@ -458,11 +468,13 @@ public class OpenLogErrorHolder implements Serializable {
 				XspEventHandler handler = (XspEventHandler) thisObj;
 				return handler.getParent();
 			} else if ("com.ibm.jscript.types.FBSGlobalObject".equals(thisObj.getClass().getName())) {
+				FBSGlobalObject obj = (FBSGlobalObject) thisObj;
 				OpenLogUtil
 						.logErrorEx(
 								new Throwable(),
-								"Developer has passed 'this' directly from an SSJS function in a Script Library. "
-										+ "Please note, SSJS Script Libraries have no context for components. You must pass the relevant component into your SSJS function as a parameter.",
+								"Developer has passed 'this' directly from an SSJS function in Script Library "
+										+ obj.getLibrary().getName()
+										+ ". Please note, SSJS Script Libraries have no context for components. You must pass the relevant component into your SSJS function as a parameter.",
 								Level.WARNING, null);
 				return null;
 			} else {
