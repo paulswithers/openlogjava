@@ -2,15 +2,16 @@
 <feature
       id="com.paulwithers.openLog.feature"
       label="OpenLog Feature"
-      version="7.0.0.qualifier"
-      provider-name="OpenNTF">
+      version="8.0.0.qualifier"
+      provider-name="Paul Withers">
 
-   <description url="http://www.example.com/description">
+   <description url="https://wiki.openntf.org/display/XOL/">
       XPages OpenLog Logger
+Logging for XPages into Julian Robichaux&apos;s awesome OpenLog. Follow the link above for the help documentation.
    </description>
 
    <copyright url="http://www.apache.org/licenses/LICENSE-2.0">
-      Copyright 2017 Paul Withers
+      Copyright 2013-2018 Paul Withers, Nathan T Freeman
 Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
