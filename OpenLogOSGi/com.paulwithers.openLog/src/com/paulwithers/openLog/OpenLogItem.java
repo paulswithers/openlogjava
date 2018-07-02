@@ -370,10 +370,14 @@ public class OpenLogItem implements Serializable {
 	/**
 	 * @return the logDb
 	 */
-	public Database getLogDb() {
+	public Database getLogDb(boolean asSigner) {
+		Session logSess = getSession();
+		if (asSigner) {
+			logSess = getSessionAsSigner();
+		}
 		if (_logDb == null) {
 			try {
-				_logDb = getSessionAsSigner().getDatabase(getThisServer(), getLogDbName(), false);
+				_logDb = logSess.getDatabase(getThisServer(), getLogDbName(), false);
 			} catch (final Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
@@ -385,7 +389,7 @@ public class OpenLogItem implements Serializable {
 				// our database object was recycled so we'll need to get it
 				// again
 				try {
-					_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
+					_logDb = logSess.getDatabase(getThisServer(), getLogDbName(), false);
 				} catch (final Exception e) {
 					OpenLogUtil.debugPrint(e);
 				}
@@ -1200,7 +1204,7 @@ public class OpenLogItem implements Serializable {
 			}
 
 			if (StringUtil.isEmpty(getLogEmail())) {
-				db = getLogDb();
+				db = getLogDb(false);
 				if (db == null) {
 					db = createLogDbFromTemplate();
 				}
@@ -1212,10 +1216,17 @@ public class OpenLogItem implements Serializable {
 				return false;
 			} else {
 				if (!db.isOpen()) {
-					OpenLogUtil.print(getSessionAsSigner().getEffectiveUserName() + " cannot open database at path "
+					OpenLogUtil.print(getUserName() + " (current user) cannot open database at path "
 							+ getLogDbName()
 							+ ", if you believe the ACL is correct, the database may have become corrupt");
-					return false;
+					db = getLogDb(true);
+					if (!db.isOpen()) {
+						OpenLogUtil.print(getSessionAsSigner().getEffectiveUserName()
+								+ " (signer) cannot open database at path " + getLogDbName()
+								+ ", if you believe the ACL is correct, the database may have become corrupt");
+
+						return false;
+					}
 				}
 			}
 
