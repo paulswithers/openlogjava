@@ -17,6 +17,7 @@ package com.paulwithers.openLog.implicit;
 
 import com.ibm.xsp.model.DataObject;
 import com.paulwithers.openLog.Activator;
+import com.paulwithers.openLog.OpenLogUtil;
 
 public class ImplicitObject implements DataObject {
 	private final static boolean _debug = Activator._debug;
@@ -30,7 +31,8 @@ public class ImplicitObject implements DataObject {
 	}
 
 	protected void _debugOut(String message) {
-		if (_debug) System.out.println(getClass().getName() + " " + message);
+		if (_debug)
+			OpenLogUtil.print(getClass().getName() + " " + message);
 	}
 
 	public Object getValue(Object paramObject) {

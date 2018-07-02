@@ -30,16 +30,16 @@ import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
-import lotus.domino.Database;
-import lotus.domino.Document;
-import lotus.domino.NotesException;
-
 import com.ibm.jscript.InterpretException;
 import com.ibm.jscript.parser.ParseException;
 import com.ibm.xsp.FacesExceptionEx;
 import com.ibm.xsp.exception.EvaluationExceptionEx;
 import com.ibm.xsp.extlib.util.ExtLibUtil;
 import com.paulwithers.openLog.OpenLogErrorHolder.EventError;
+
+import lotus.domino.Database;
+import lotus.domino.Document;
+import lotus.domino.NotesException;
 
 /**
  * @author Paul Withers
@@ -271,7 +271,7 @@ public class OpenLogPhaseListener implements PhaseListener {
 			OpenLogUtil.logErrorEx(pe, msg, null, null);
 		} else {
 			try {
-				System.out.println("Error type not found:" + error.getClass().getName());
+				OpenLogUtil.print("Error type not found:" + error.getClass().getName());
 				msg = error.toString();
 				OpenLogUtil.logErrorEx((Throwable) error, msg, null, null);
 			} catch (Throwable t) {

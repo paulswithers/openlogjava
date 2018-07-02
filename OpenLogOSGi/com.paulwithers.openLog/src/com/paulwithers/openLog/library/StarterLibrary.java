@@ -17,6 +17,7 @@ package com.paulwithers.openLog.library;
 
 import com.ibm.xsp.library.AbstractXspLibrary;
 import com.paulwithers.openLog.Activator;
+import com.paulwithers.openLog.OpenLogUtil;
 
 public class StarterLibrary extends AbstractXspLibrary {
 	private final static String LIBRARY_ID = StarterLibrary.class.getName();
@@ -27,13 +28,13 @@ public class StarterLibrary extends AbstractXspLibrary {
 
 	static {
 		if (_debug) {
-			System.out.println(StarterLibrary.class.getName() + " loaded");
+			OpenLogUtil.print(StarterLibrary.class.getName() + " loaded");
 		}
 	}
 
 	public StarterLibrary() {
 		if (_debug) {
-			System.out.println(StarterLibrary.class.getName() + " created");
+			OpenLogUtil.print(StarterLibrary.class.getName() + " created");
 		}
 	}
 

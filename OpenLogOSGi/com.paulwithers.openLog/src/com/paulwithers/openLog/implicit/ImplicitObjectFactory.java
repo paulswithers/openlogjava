@@ -22,13 +22,15 @@ import javax.faces.context.FacesContext;
 import com.ibm.xsp.context.FacesContextEx;
 import com.ibm.xsp.util.TypedUtil;
 import com.paulwithers.openLog.Activator;
+import com.paulwithers.openLog.OpenLogUtil;
 
 public class ImplicitObjectFactory implements com.ibm.xsp.el.ImplicitObjectFactory {
 	private final String[][] implicitObjectList = { { "server", ImplicitObject.class.getName() } };
 	private final static boolean _debug = Activator._debug;
 
 	public ImplicitObjectFactory() {
-		if (_debug) System.out.println(getClass().getName() + " created");
+		if (_debug)
+			OpenLogUtil.print(getClass().getName() + " created");
 	}
 
 	@SuppressWarnings("unchecked")

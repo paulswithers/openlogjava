@@ -190,17 +190,27 @@ public class OpenLogUtil {
 					}
 				} catch (Exception e2) {
 				}
-				System.err.println("OpenLogItem error: " + debugMsg);
+				System.err.println("XOL_DEBUG error: " + debugMsg);
 			}
 
 			// debug level of 2 prints the whole stack trace
 			if (debugLevel >= 2) {
-				System.err.println("OpenLogItem error trace: ");
+				System.err.println("XOL_DEBUG error trace: ");
 				ee.printStackTrace();
 			}
 		} catch (Exception e) {
 			// at this point, if we have an error just discard it
 		}
+	}
+
+	/**
+	 * Print out a message prefixed by "XOL: "
+	 * 
+	 * @param msg
+	 *            String message to print
+	 */
+	public static void print(String msg) {
+		System.out.println("XOL: " + msg);
 	}
 
 	/**

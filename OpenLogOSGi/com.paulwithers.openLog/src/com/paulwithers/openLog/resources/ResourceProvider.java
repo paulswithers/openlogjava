@@ -21,18 +21,18 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import com.ibm.xsp.webapp.FacesResourceServlet;
 import com.ibm.xsp.webapp.resources.BundleResourceProvider;
 import com.ibm.xsp.webapp.resources.URLResourceProvider;
 import com.paulwithers.openLog.Activator;
+import com.paulwithers.openLog.OpenLogUtil;
 import com.paulwithers.openLog.util.LibraryUtils;
 
 public class ResourceProvider extends BundleResourceProvider {
 	private final static boolean _debug = Activator._debug;
 	static {
 		if (_debug)
-			System.out.println(ResourceProvider.class.getName() + " loaded");
+			OpenLogUtil.print(ResourceProvider.class.getName() + " loaded");
 	}
 	public static final String BUNDLE_RES_PATH = "/resources/web/";
 	public static final String STARTER_PREFIX = "." + ModulePath.NAMESPACE + "/" + Activator.getVersion();
@@ -48,7 +48,7 @@ public class ResourceProvider extends BundleResourceProvider {
 	public ResourceProvider() {
 		super(Activator.instance.getBundle(), STARTER_PREFIX);
 		if (_debug) {
-			System.out.println(getClass().getName() + " created");
+			OpenLogUtil.print(getClass().getName() + " created");
 		}
 	}
 

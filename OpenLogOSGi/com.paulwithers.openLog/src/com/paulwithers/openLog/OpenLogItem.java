@@ -373,7 +373,7 @@ public class OpenLogItem implements Serializable {
 	public Database getLogDb() {
 		if (_logDb == null) {
 			try {
-				_logDb = getSession().getDatabase(getThisServer(), getLogDbName(), false);
+				_logDb = getSessionAsSigner().getDatabase(getThisServer(), getLogDbName(), false);
 			} catch (final Exception e) {
 				OpenLogUtil.debugPrint(e);
 			}
@@ -963,7 +963,7 @@ public class OpenLogItem implements Serializable {
 			for (final StackTraceElement elem : ee.getStackTrace()) {
 				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
 					// NTF - we are by definition in a loop
-					System.out.println(ee.toString());
+					OpenLogUtil.print(ee.toString());
 					OpenLogUtil.debugPrint(ee);
 					_logSuccess = false;
 					return "";
@@ -990,7 +990,7 @@ public class OpenLogItem implements Serializable {
 			return getMessage();
 
 		} catch (final Exception e) {
-			System.out.println(e.toString());
+			OpenLogUtil.print(e.toString());
 			OpenLogUtil.debugPrint(e);
 			_logSuccess = false;
 			return "";
@@ -1019,7 +1019,7 @@ public class OpenLogItem implements Serializable {
 			for (final StackTraceElement elem : ee.getStackTrace()) {
 				if (elem.getClassName().equals(OpenLogItem.class.getName())) {
 					// NTF - we are by definition in a loop
-					System.out.println(ee.toString());
+					OpenLogUtil.print(ee.toString());
 					OpenLogUtil.debugPrint(ee);
 					_logSuccess = false;
 					return "";
@@ -1208,8 +1208,15 @@ public class OpenLogItem implements Serializable {
 				db = getSessionAsSigner().getDatabase(getThisServer(), "mail.box", false);
 			}
 			if (db == null) {
-				System.out.println("Could not retrieve database at path " + getLogDbName());
+				OpenLogUtil.print("Could not retrieve database at path " + getLogDbName());
 				return false;
+			} else {
+				if (!db.isOpen()) {
+					OpenLogUtil.print(getSessionAsSigner().getEffectiveUserName() + " cannot open database at path "
+							+ getLogDbName()
+							+ ", if you believe the ACL is correct, the database may have become corrupt");
+					return false;
+				}
 			}
 
 			logDoc = db.createDocument();
