@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<view xmlns="http://www.lotus.com/dxl" showinmenu="true" publicaccess="false" default="true" noviewformat="true">
-  <code event="selection">
-    <formula>SELECT @All</formula>
-  </code>
-  <item name="$FormulaClass">
-    <text>1</text>
-  </item>
-</view>
