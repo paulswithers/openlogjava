@@ -612,7 +612,7 @@ public class OpenLogItem implements Serializable {
 	 * @return the logDbName
 	 */
 	public String getLogDbName() {
-		if ("".equals(_logDbName)) {
+		if ("".equals(_logDbName) || null == _logDbName) {
 			_logDbName = OpenLogUtil.getXspProperty("xsp.openlog.filepath", "OpenLog.nsf");
 			if ("[CURRENT]".equalsIgnoreCase(_logDbName)) {
 				setLogDbName(getThisDatabasePath());
@@ -1333,6 +1333,10 @@ public class OpenLogItem implements Serializable {
 			OpenLogUtil.debugPrint(t);
 			retval = false;
 		} finally {
+			if (_errDoc != null) {
+				_errDoc = null;
+				_errDocUnid = null;
+			}
 			// recycle all the logDoc objects when we're done with them
 			try {
 				if (rtitem != null) {

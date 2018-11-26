@@ -2,7 +2,7 @@
 <feature
       id="com.paulwithers.openLog.feature"
       label="OpenLog Feature"
-      version="8.0.0.qualifier"
+      version="8.0.1.qualifier"
       provider-name="Paul Withers">
 
    <description url="https://wiki.openntf.org/display/XOL/">
